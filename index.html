@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Cardinal — Stanford Athletics Attendance</title>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', -apple-system, sans-serif;
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const CARDINAL = '#8C1515';
+const CARDINAL_DARK = '#6B1010';
+const CARDINAL_LIGHT = '#F9EFEF';
+
+// ── Tweaks defaults ──────────────────────────────────────────
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "dormName": "Toyon Hall",
+  "dormRank": 3,
+  "userName": "Alex ",
+  "gamesAttended": 14,
+  "currentStreak": 4,
+  "totalPoints": 1240
+}/*EDITMODE-END*/;
+
+// ── Attendee seed data per game ──────────────────────────────
+const ATTENDEES_SEED = {
+  1: [
+    { name: 'Jordan K.', dorm: 'FloMo', color: '#E07B54', initials: 'JK' },
+    { name: 'Priya M.', dorm: 'Stern', color: '#5B8DD9', initials: 'PM' },
+    { name: 'Tyler H.', dorm: 'Toyon Hall', color: '#48A868', initials: 'TH' },
+    { name: 'Sasha L.', dorm: 'Branner', color: '#9B59B6', initials: 'SL' },
+    { name: 'Marcus W.', dorm: 'Roble', color: '#E74C3C', initials: 'MW' },
+    { name: 'Nina T.', dorm: 'Larkin', color: '#F39C12', initials: 'NT' },
+    { name: 'Cam R.', dorm: 'Wilbur', color: '#1ABC9C', initials: 'CR' },
+    { name: 'Leila A.', dorm: 'FloMo', color: '#E91E8C', initials: 'LA' },
+    { name: 'Dev P.', dorm: 'Stern', color: '#3498DB', initials: 'DP' },
+    { name: 'Zoe F.', dorm: 'Soto', color: '#2ECC71', initials: 'ZF' },
+    { name: 'Omar B.', dorm: 'Toyon Hall', color: '#E67E22', initials: 'OB' },
+  ],
+  2: [
+    { name: 'Priya M.', dorm: 'Stern', color: '#5B8DD9', initials: 'PM' },
+    { name: 'Marcus W.', dorm: 'Roble', color: '#E74C3C', initials: 'MW' },
+    { name: 'Leila A.', dorm: 'FloMo', color: '#E91E8C', initials: 'LA' },
+    { name: 'Cam R.', dorm: 'Wilbur', color: '#1ABC9C', initials: 'CR' },
+    { name: 'Zoe F.', dorm: 'Soto', color: '#2ECC71', initials: 'ZF' },
+  ],
+  3: [
+    { name: 'Tyler H.', dorm: 'Toyon Hall', color: '#48A868', initials: 'TH' },
+    { name: 'Nina T.', dorm: 'Larkin', color: '#F39C12', initials: 'NT' },
+    { name: 'Omar B.', dorm: 'Toyon Hall', color: '#E67E22', initials: 'OB' },
+    { name: 'Dev P.', dorm: 'Stern', color: '#3498DB', initials: 'DP' },
+    { name: 'Sasha L.', dorm: 'Branner', color: '#9B59B6', initials: 'SL' },
+    { name: 'Jordan K.', dorm: 'FloMo', color: '#E07B54', initials: 'JK' },
+    { name: 'Marcus W.', dorm: 'Roble', color: '#E74C3C', initials: 'MW' },
+  ],
+  4: [
+    { name: 'Leila A.', dorm: 'FloMo', color: '#E91E8C', initials: 'LA' },
+    { name: 'Priya M.', dorm: 'Stern', color: '#5B8DD9', initials: 'PM' },
+    { name: 'Zoe F.', dorm: 'Soto', color: '#2ECC71', initials: 'ZF' },
+  ],
+};
+
+// ── Data ─────────────────────────────────────────────────────
+const LEADERBOARD = [
+  { rank: 1, dorm: 'FloMo', points: 2340, games: 22, change: 'up' },
+  { rank: 2, dorm: 'Stern', points: 2105, games: 20, change: 'same' },
+  { rank: 3, dorm: 'Toyon Hall', points: 1890, games: 18, change: 'up', isYours: true },
+  { rank: 4, dorm: 'Roble Hall', points: 1620, games: 15, change: 'down' },
+  { rank: 5, dorm: 'Branner', points: 1480, games: 14, change: 'up' },
+  { rank: 6, dorm: 'Larkin', points: 1210, games: 12, change: 'down' },
+  { rank: 7, dorm: 'Wilbur', points: 1050, games: 10, change: 'same' },
+  { rank: 8, dorm: 'Soto', points: 880, games: 9, change: 'down' },
+];
+
+const BADGES_DATA = [
+  { id: 1, emoji: '🏈', name: 'First Game', desc: 'Attend your first event', earned: true },
+  { id: 2, emoji: '🔥', name: 'On Fire', desc: '3-game win streak', earned: true },
+  { id: 3, emoji: '🌲', name: 'Tree Gang', desc: 'Attend 10+ games', earned: true },
+  { id: 4, emoji: '🤝', name: 'Social Butterfly', desc: 'Bring a friend to a game', earned: true },
+  { id: 5, emoji: '🏆', name: 'Season Champ', desc: 'Attend 25 games', earned: false },
+  { id: 6, emoji: '⚡', name: 'Super Fan', desc: 'Attend 5 sports', earned: false },
+];
+
+const UPCOMING_GAMES = [
+  { id: 1, sport: 'Football', opponent: 'vs. USC', date: 'Sat, May 10', time: '7:00 PM', venue: 'Stanford Stadium', color: '#8C1515', icon: '🏈', points: 100 },
+  { id: 2, sport: "Men's Basketball", opponent: 'vs. Cal', date: 'Wed, May 14', time: '8:00 PM', venue: 'Maples Pavilion', color: '#2D5A8C', icon: '🏀', points: 75 },
+  { id: 3, sport: 'Baseball', opponent: 'vs. Oregon', date: 'Fri, May 16', time: '3:00 PM', venue: 'Sunken Diamond', color: '#2E7D32', icon: '⚾', points: 50 },
+  { id: 4, sport: "Women's Soccer", opponent: 'vs. UCLA', date: 'Sun, May 18', time: '1:00 PM', venue: 'Laird Q. Cagan Stadium', color: '#6A1B9A', icon: '⚽', points: 75 },
+];
+
+// ── NavBar ────────────────────────────────────────────────────
+function BottomNav({ active, setActive }) {
+  const tabs = [
+    { id: 'home', label: 'Leaderboard', icon: (active) => (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="14" width="5" height="8" rx="1" fill={active ? CARDINAL : '#B0B0B0'}/>
+        <rect x="9.5" y="9" width="5" height="13" rx="1" fill={active ? CARDINAL : '#B0B0B0'}/>
+        <rect x="17" y="4" width="5" height="18" rx="1" fill={active ? CARDINAL : '#B0B0B0'}/>
+      </svg>
+    )},
+    { id: 'games', label: 'Games', icon: (active) => (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="4" width="18" height="18" rx="3" stroke={active ? CARDINAL : '#B0B0B0'} strokeWidth="2"/>
+        <path d="M3 9h18" stroke={active ? CARDINAL : '#B0B0B0'} strokeWidth="2"/>
+        <circle cx="8" cy="14" r="1.5" fill={active ? CARDINAL : '#B0B0B0'}/>
+        <circle cx="12" cy="14" r="1.5" fill={active ? CARDINAL : '#B0B0B0'}/>
+        <circle cx="16" cy="14" r="1.5" fill={active ? CARDINAL : '#B0B0B0'}/>
+        <path d="M8 4V2M16 4V2" stroke={active ? CARDINAL : '#B0B0B0'} strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+    )},
+    { id: 'profile', label: 'My Profile', icon: (active) => (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="8" r="4" stroke={active ? CARDINAL : '#B0B0B0'} strokeWidth="2"/>
+        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke={active ? CARDINAL : '#B0B0B0'} strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+    )},
+  ];
+
+  return (
+    <div style={{
+      position: 'absolute', bottom: 0, left: 0, right: 0,
+      height: 82, background: 'rgba(255,255,255,0.96)',
+      backdropFilter: 'blur(20px)',
+      borderTop: '1px solid rgba(0,0,0,0.08)',
+      display: 'flex', alignItems: 'flex-start', justifyContent: 'space-around',
+      paddingTop: 10, paddingBottom: 0, zIndex: 100,
+    }}>
+      {tabs.map(tab => (
+        <button key={tab.id} onClick={() => setActive(tab.id)} style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+          background: 'none', border: 'none', cursor: 'pointer', padding: '4px 16px',
+          transition: 'transform 0.1s',
+        }}>
+          {tab.icon(active === tab.id)}
+          <span style={{
+            fontSize: 11, fontWeight: active === tab.id ? 600 : 400,
+            color: active === tab.id ? CARDINAL : '#999',
+            fontFamily: 'Inter, sans-serif',
+            transition: 'color 0.15s',
+          }}>{tab.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ── Screen: Home / Leaderboard ────────────────────────────────
+function HomeScreen({ tweaks }) {
+  const { dormName, dormRank } = tweaks;
+  const boards = LEADERBOARD.map(d => d.dorm === dormName ? { ...d, dorm: dormName, rank: dormRank, isYours: true } : d);
+
+  return (
+    <div style={{ height: '100%', overflowY: 'auto', paddingBottom: 90, background: '#FAFAFA' }}>
+      {/* Header */}
+      <div style={{
+        background: CARDINAL, paddingTop: 58, paddingBottom: 20, paddingLeft: 20, paddingRight: 20,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+          <span style={{ fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: -0.5 }}>The Cardinal</span>
+          <span style={{ fontSize: 18 }}>🌲</span>
+        </div>
+        <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, fontWeight: 400 }}>Spring 2026 Season</p>
+        {/* Dorm rank banner */}
+        <div style={{
+          marginTop: 14, background: 'rgba(255,255,255,0.15)',
+          borderRadius: 12, padding: '10px 14px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          border: '1px solid rgba(255,255,255,0.25)',
+        }}>
+          <div>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: 0.5 }}>Your Dorm</p>
+            <p style={{ color: '#fff', fontSize: 16, fontWeight: 700 }}>{dormName}</p>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: 0.5 }}>Current Rank</p>
+            <p style={{ color: '#FFD700', fontSize: 22, fontWeight: 800 }}>#{dormRank}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Season stats strip */}
+      <div style={{
+        display: 'flex', background: '#fff',
+        borderBottom: '1px solid #F0F0F0', padding: '12px 0',
+      }}>
+        {[
+          { label: 'Dorms', value: '8' },
+          { label: 'Total Games', value: '41' },
+          { label: 'Season', value: 'Spring' },
+        ].map((s, i) => (
+          <div key={i} style={{
+            flex: 1, textAlign: 'center',
+            borderRight: i < 2 ? '1px solid #F0F0F0' : 'none',
+          }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#1A1A1A' }}>{s.value}</div>
+            <div style={{ fontSize: 11, color: '#999', fontWeight: 500, marginTop: 1 }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Section label */}
+      <div style={{ padding: '16px 20px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: '#999', textTransform: 'uppercase', letterSpacing: 0.5 }}>Dorm Rankings</span>
+        <span style={{ fontSize: 12, color: '#BBB' }}>By points</span>
+      </div>
+
+      {/* Leaderboard rows */}
+      <div style={{ background: '#fff', margin: '0 12px', borderRadius: 16, overflow: 'hidden', boxShadow: '0 1px 8px rgba(0,0,0,0.06)' }}>
+        {boards.map((dorm, i) => (
+          <LeaderboardRow key={dorm.rank} dorm={dorm} isLast={i === boards.length - 1} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LeaderboardRow({ dorm, isLast }) {
+  const rankColor = dorm.rank === 1 ? '#FFD700' : dorm.rank === 2 ? '#C0C0C0' : dorm.rank === 3 ? '#CD7F32' : '#CCC';
+  const rankBg = dorm.rank <= 3 ? rankColor + '22' : '#F5F5F5';
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', padding: '12px 16px',
+      borderBottom: isLast ? 'none' : '1px solid #F5F5F5',
+      background: dorm.isYours ? CARDINAL_LIGHT : '#fff',
+      transition: 'background 0.2s',
+    }}>
+      {/* Rank badge */}
+      <div style={{
+        width: 32, height: 32, borderRadius: 10, background: rankBg,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        marginRight: 12, flexShrink: 0,
+      }}>
+        <span style={{ fontSize: 14, fontWeight: 800, color: dorm.rank <= 3 ? rankColor : '#BBB' }}>
+          {dorm.rank}
+        </span>
+      </div>
+
+      {/* Dorm name */}
+      <div style={{ flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: 15, fontWeight: dorm.isYours ? 700 : 500, color: dorm.isYours ? CARDINAL : '#1A1A1A' }}>
+            {dorm.dorm}
+          </span>
+          {dorm.isYours && (
+            <span style={{
+              fontSize: 10, fontWeight: 700, color: CARDINAL,
+              background: CARDINAL_LIGHT, border: `1px solid ${CARDINAL}33`,
+              borderRadius: 6, padding: '1px 5px', textTransform: 'uppercase', letterSpacing: 0.3,
+            }}>You</span>
+          )}
+        </div>
+        <span style={{ fontSize: 12, color: '#AAA', fontWeight: 400 }}>{dorm.games} games attended</span>
+      </div>
+
+      {/* Change indicator */}
+      <div style={{ marginRight: 10 }}>
+        {dorm.change === 'up' && <span style={{ fontSize: 12, color: '#22C55E' }}>▲</span>}
+        {dorm.change === 'down' && <span style={{ fontSize: 12, color: '#EF4444' }}>▼</span>}
+        {dorm.change === 'same' && <span style={{ fontSize: 12, color: '#BBB' }}>—</span>}
+      </div>
+
+      {/* Points */}
+      <div style={{ textAlign: 'right' }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#1A1A1A' }}>{dorm.points.toLocaleString()}</div>
+        <div style={{ fontSize: 11, color: '#BBB', fontWeight: 400 }}>pts</div>
+      </div>
+    </div>
+  );
+}
+
+// ── Screen: Profile ──────────────────────────────────────────
+function ProfileScreen({ tweaks }) {
+  const { userName, gamesAttended, currentStreak, totalPoints, dormName } = tweaks;
+  const [referralSent, setReferralSent] = React.useState(false);
+
+  return (
+    <div style={{ height: '100%', overflowY: 'auto', paddingBottom: 90, background: '#FAFAFA' }}>
+      {/* Header */}
+      <div style={{
+        background: CARDINAL, paddingTop: 58, paddingBottom: 28, paddingLeft: 20, paddingRight: 20,
+        textAlign: 'center',
+      }}>
+        {/* Avatar */}
+        <div style={{
+          width: 72, height: 72, borderRadius: 36,
+          background: 'rgba(255,255,255,0.2)',
+          border: '3px solid rgba(255,255,255,0.5)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          margin: '0 auto 12px', fontSize: 28,
+        }}>🌲</div>
+        <p style={{ color: '#fff', fontSize: 20, fontWeight: 800 }}>{userName}</p>
+        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, marginTop: 2 }}>{dormName}</p>
+
+        {/* Points pill */}
+        <div style={{
+          marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6,
+          background: 'rgba(255,255,255,0.15)', borderRadius: 999, padding: '6px 14px',
+          border: '1px solid rgba(255,255,255,0.25)',
+        }}>
+          <span style={{ fontSize: 14 }}>⭐</span>
+          <span style={{ color: '#FFD700', fontWeight: 800, fontSize: 16 }}>{totalPoints.toLocaleString()}</span>
+          <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13 }}>total points</span>
+        </div>
+      </div>
+
+      {/* Stats row */}
+      <div style={{
+        display: 'flex', background: '#fff', margin: '12px 12px 0',
+        borderRadius: 16, boxShadow: '0 1px 8px rgba(0,0,0,0.06)', overflow: 'hidden',
+      }}>
+        {[
+          { label: 'Games Attended', value: gamesAttended, icon: '🏟️' },
+          { label: 'Current Streak', value: `${currentStreak}🔥`, icon: null },
+          { label: 'Season Rank', value: `#3`, icon: '🥉' },
+        ].map((s, i) => (
+          <div key={i} style={{
+            flex: 1, padding: '14px 8px', textAlign: 'center',
+            borderRight: i < 2 ? '1px solid #F0F0F0' : 'none',
+          }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: '#1A1A1A' }}>{s.value}</div>
+            <div style={{ fontSize: 11, color: '#999', marginTop: 2, lineHeight: '14px' }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Badges */}
+      <div style={{ padding: '16px 12px 8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1A1A' }}>Badges</span>
+          <span style={{ fontSize: 12, color: '#999' }}>{BADGES_DATA.filter(b=>b.earned).length}/{BADGES_DATA.length} earned</span>
+        </div>
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10,
+        }}>
+          {BADGES_DATA.map(badge => (
+            <BadgeCard key={badge.id} badge={badge} />
+          ))}
+        </div>
+      </div>
+
+      {/* Referral section */}
+      <div style={{ padding: '8px 12px 8px' }}>
+        <div style={{
+          background: '#fff', borderRadius: 16, padding: '16px',
+          boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
+          border: `1.5px solid ${CARDINAL_LIGHT}`,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: 12,
+              background: CARDINAL_LIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 20,
+            }}>👥</div>
+            <div>
+              <p style={{ fontSize: 15, fontWeight: 700, color: '#1A1A1A' }}>Bring a Friend</p>
+              <p style={{ fontSize: 12, color: '#999', marginTop: 1 }}>Earn 50 pts per referral</p>
+            </div>
+          </div>
+          <p style={{ fontSize: 13, color: '#666', lineHeight: '18px', marginBottom: 12 }}>
+            Invite a friend to join The Cardinal and earn bonus points when they attend their first game together with you.
+          </p>
+          <button
+            onClick={() => setReferralSent(true)}
+            style={{
+              width: '100%', padding: '12px',
+              background: referralSent ? '#22C55E' : CARDINAL,
+              color: '#fff', borderRadius: 12, border: 'none',
+              fontSize: 15, fontWeight: 700, cursor: 'pointer',
+              transition: 'background 0.3s',
+            }}
+          >
+            {referralSent ? '✓ Invite Sent!' : 'Share Invite Link'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BadgeCard({ badge }) {
+  return (
+    <div style={{
+      background: badge.earned ? '#fff' : '#F8F8F8',
+      borderRadius: 14, padding: '12px 8px', textAlign: 'center',
+      boxShadow: badge.earned ? '0 1px 6px rgba(0,0,0,0.08)' : 'none',
+      border: badge.earned ? `1.5px solid ${CARDINAL}22` : '1.5px solid #EFEFEF',
+      opacity: badge.earned ? 1 : 0.55,
+      position: 'relative', overflow: 'hidden',
+    }}>
+      {badge.earned && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: 3,
+          background: `linear-gradient(90deg, ${CARDINAL}, #E85555)`,
+        }} />
+      )}
+      <div style={{ fontSize: 26, marginBottom: 4, filter: badge.earned ? 'none' : 'grayscale(1)' }}>
+        {badge.emoji}
+      </div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: badge.earned ? '#1A1A1A' : '#999', lineHeight: '14px' }}>
+        {badge.name}
+      </div>
+      {!badge.earned && (
+        <div style={{ fontSize: 10, color: '#BBB', marginTop: 2 }}>🔒 Locked</div>
+      )}
+    </div>
+  );
+}
+
+// ── Avatar bubble ─────────────────────────────────────────────
+function Avatar({ person, size = 28, style = {} }) {
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%',
+      background: person.color,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: size * 0.36, fontWeight: 700, color: '#fff',
+      border: '2px solid #fff',
+      flexShrink: 0,
+      ...style,
+    }}>
+      {person.initials}
+    </div>
+  );
+}
+
+// ── Stacked avatar row ────────────────────────────────────────
+function AvatarStack({ attendees, max = 5, size = 28 }) {
+  const visible = attendees.slice(0, max);
+  const overflow = attendees.length - max;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      {visible.map((p, i) => (
+        <div key={i} style={{ marginLeft: i === 0 ? 0 : -(size * 0.35) }}>
+          <Avatar person={p} size={size} />
+        </div>
+      ))}
+      {overflow > 0 && (
+        <div style={{
+          width: size, height: size, borderRadius: '50%',
+          background: '#E8E8E8', border: '2px solid #fff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: size * 0.32, fontWeight: 700, color: '#888',
+          marginLeft: -(size * 0.35),
+          flexShrink: 0,
+        }}>
+          +{overflow}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Attendee list drawer ──────────────────────────────────────
+function AttendeeDrawer({ attendees, userName, isGoing, gameColor }) {
+  const [expanded, setExpanded] = React.useState(false);
+  const allAttendees = isGoing
+    ? [{ name: 'You', dorm: '', color: CARDINAL, initials: (userName || 'Me').trim().slice(0, 2).toUpperCase() }, ...attendees]
+    : attendees;
+  const previewCount = 3;
+  const shown = expanded ? allAttendees : allAttendees.slice(0, previewCount);
+
+  if (allAttendees.length === 0) return null;
+
+  return (
+    <div style={{
+      borderTop: '1px solid #F0F0F0', paddingTop: 12, marginTop: 4,
+    }}>
+      {/* Header row */}
+      <button
+        onClick={() => setExpanded(v => !v)}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          width: '100%', background: 'none', border: 'none', cursor: 'pointer',
+          padding: 0, marginBottom: expanded ? 10 : 8,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <AvatarStack attendees={allAttendees} max={5} size={26} />
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#444' }}>
+            {allAttendees.length} {allAttendees.length === 1 ? 'person' : 'people'} going
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ fontSize: 12, color: '#AAA' }}>{expanded ? 'less' : 'see all'}</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+            <path d="M6 9l6 6 6-6" stroke="#BBB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </button>
+
+      {/* Name list */}
+      {expanded && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 4 }}>
+          {allAttendees.map((p, i) => (
+            <div key={i} style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '5px 8px', borderRadius: 10,
+              background: p.name === 'You' ? CARDINAL_LIGHT : '#FAFAFA',
+              border: p.name === 'You' ? `1px solid ${CARDINAL}22` : '1px solid transparent',
+            }}>
+              <Avatar person={p} size={30} />
+              <div style={{ flex: 1 }}>
+                <span style={{
+                  fontSize: 13, fontWeight: p.name === 'You' ? 700 : 500,
+                  color: p.name === 'You' ? CARDINAL : '#1A1A1A',
+                }}>{p.name}</span>
+                {p.dorm && (
+                  <span style={{ fontSize: 11, color: '#AAA', marginLeft: 5 }}>{p.dorm}</span>
+                )}
+              </div>
+              {p.name === 'You' && (
+                <span style={{
+                  fontSize: 10, fontWeight: 700, color: CARDINAL,
+                  background: CARDINAL_LIGHT, border: `1px solid ${CARDINAL}33`,
+                  borderRadius: 6, padding: '1px 6px',
+                }}>YOU</span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Collapsed: show first few names inline */}
+      {!expanded && (
+        <p style={{ fontSize: 12, color: '#888', lineHeight: '16px' }}>
+          {isGoing && <span style={{ color: CARDINAL, fontWeight: 600 }}>You</span>}
+          {isGoing && allAttendees.length > 1 && ', '}
+          {allAttendees
+            .filter(p => p.name !== 'You')
+            .slice(0, isGoing ? 2 : 3)
+            .map(p => p.name)
+            .join(', ')}
+          {allAttendees.length > previewCount && ` +${allAttendees.length - previewCount} more`}
+          {' are going'}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ── Screen: Upcoming Games ────────────────────────────────────
+function GamesScreen({ tweaks }) {
+  const { totalPoints, userName } = tweaks;
+  const [going, setGoing] = React.useState({});
+  const [pts, setPts] = React.useState(totalPoints);
+  const [bouncing, setBouncing] = React.useState(null);
+  // Track attendees per game (mutable copy)
+  const [attendees, setAttendees] = React.useState(
+    Object.fromEntries(Object.entries(ATTENDEES_SEED).map(([k, v]) => [k, [...v]]))
+  );
+
+  const handleGoing = (game) => {
+    if (going[game.id]) return;
+    setGoing(prev => ({ ...prev, [game.id]: true }));
+    setPts(prev => prev + game.points);
+    setBouncing(game.id);
+    setTimeout(() => setBouncing(null), 700);
+  };
+
+  return (
+    <div style={{ height: '100%', overflowY: 'auto', paddingBottom: 90, background: '#FAFAFA' }}>
+      {/* Header */}
+      <div style={{
+        background: CARDINAL, paddingTop: 58, paddingBottom: 20, paddingLeft: 20, paddingRight: 20,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <p style={{ color: '#fff', fontSize: 22, fontWeight: 800, letterSpacing: -0.5 }}>Upcoming Games</p>
+            <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, marginTop: 2 }}>Tap "I'm Going" to claim points</p>
+          </div>
+          <div style={{
+            background: 'rgba(255,255,255,0.15)', borderRadius: 12,
+            padding: '8px 12px', textAlign: 'center',
+            border: '1px solid rgba(255,255,255,0.25)',
+            transition: 'transform 0.15s',
+            transform: bouncing ? 'scale(1.12)' : 'scale(1)',
+          }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#FFD700' }}>{pts.toLocaleString()}</div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.65)', fontWeight: 500 }}>MY POINTS</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Game cards */}
+      <div style={{ padding: '12px 12px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {UPCOMING_GAMES.map(game => (
+          <GameCard
+            key={game.id}
+            game={game}
+            isGoing={!!going[game.id]}
+            onGoing={() => handleGoing(game)}
+            attendees={attendees[game.id] || []}
+            userName={userName}
+          />
+        ))}
+      </div>
+
+      {/* Info note */}
+      <div style={{ padding: '14px 12px' }}>
+        <div style={{
+          background: '#fff', borderRadius: 12, padding: '12px 14px',
+          display: 'flex', gap: 10, alignItems: 'flex-start',
+          border: '1px solid #F0F0F0',
+        }}>
+          <span style={{ fontSize: 16 }}>ℹ️</span>
+          <p style={{ fontSize: 12, color: '#888', lineHeight: '17px' }}>
+            Points are awarded after attendance is verified at the gate. Bring your Stanford ID to every event.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GameCard({ game, isGoing, onGoing, attendees, userName }) {
+  return (
+    <div style={{
+      background: '#fff', borderRadius: 16,
+      boxShadow: isGoing ? `0 2px 16px ${game.color}33` : '0 1px 8px rgba(0,0,0,0.06)',
+      overflow: 'hidden',
+      border: isGoing ? `1.5px solid ${game.color}55` : '1.5px solid transparent',
+      transition: 'box-shadow 0.3s, border 0.3s',
+    }}>
+      {/* Sport color stripe */}
+      <div style={{ height: 4, background: `linear-gradient(90deg, ${game.color}, ${game.color}88)` }} />
+      <div style={{ padding: '14px 16px' }}>
+
+        {/* Header: sport + points badge */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 20 }}>{game.icon}</span>
+            <div>
+              <p style={{ fontSize: 15, fontWeight: 700, color: '#1A1A1A' }}>{game.sport}</p>
+              <p style={{ fontSize: 13, color: '#666', fontWeight: 500 }}>{game.opponent}</p>
+            </div>
+          </div>
+          <div style={{
+            background: isGoing ? game.color : '#F5F5F5',
+            borderRadius: 10, padding: '4px 10px',
+            transition: 'background 0.3s',
+          }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: isGoing ? '#fff' : '#999' }}>
+              +{game.points} pts
+            </span>
+          </div>
+        </div>
+
+        {/* Date / time / venue */}
+        <div style={{ display: 'flex', gap: 14, marginBottom: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="4" width="18" height="18" rx="3" stroke="#BBB" strokeWidth="2"/>
+              <path d="M3 9h18" stroke="#BBB" strokeWidth="2"/>
+              <path d="M8 2v4M16 2v4" stroke="#BBB" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            <span style={{ fontSize: 12, color: '#888' }}>{game.date}</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="#BBB" strokeWidth="2"/>
+              <path d="M12 7v5l3 3" stroke="#BBB" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            <span style={{ fontSize: 12, color: '#888' }}>{game.time}</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 12 }}>
+          <svg width="12" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#BBB" strokeWidth="2"/>
+            <circle cx="12" cy="9" r="2.5" stroke="#BBB" strokeWidth="2"/>
+          </svg>
+          <span style={{ fontSize: 12, color: '#888' }}>{game.venue}</span>
+        </div>
+
+        {/* ── Partiful-style attendee section ── */}
+        <AttendeeDrawer
+          attendees={attendees}
+          userName={userName}
+          isGoing={isGoing}
+          gameColor={game.color}
+        />
+
+        {/* CTA Button */}
+        <button
+          onClick={onGoing}
+          style={{
+            width: '100%', padding: '13px',
+            marginTop: 12,
+            background: isGoing
+              ? `linear-gradient(135deg, #22C55E, #16A34A)`
+              : `linear-gradient(135deg, ${CARDINAL}, ${CARDINAL_DARK})`,
+            color: '#fff', borderRadius: 12, border: 'none',
+            fontSize: 15, fontWeight: 700, cursor: isGoing ? 'default' : 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            transition: 'background 0.3s',
+            boxShadow: isGoing ? '0 4px 12px rgba(34,197,94,0.35)' : `0 4px 12px ${CARDINAL}44`,
+          }}
+        >
+          {isGoing ? (
+            <>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12l5 5L19 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              You're Going!
+            </>
+          ) : (
+            <>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5v14M5 12h14" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/>
+              </svg>
+              I'm Going
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── App Shell ─────────────────────────────────────────────────
+function App() {
+  const [activeTab, setActiveTab] = React.useState('home');
+  const [tweaks, setTweaks] = React.useState(TWEAK_DEFAULTS);
+  const [showTweaks, setShowTweaks] = React.useState(false);
+
+  // Tweaks protocol
+  React.useEffect(() => {
+    const handler = (e) => {
+      if (e.data?.type === '__activate_edit_mode') setShowTweaks(true);
+      if (e.data?.type === '__deactivate_edit_mode') setShowTweaks(false);
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  const setTweak = (key, value) => {
+    const updates = typeof key === 'object' ? key : { [key]: value };
+    setTweaks(prev => ({ ...prev, ...updates }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: updates }, '*');
+  };
+
+  const screens = { home: HomeScreen, games: GamesScreen, profile: ProfileScreen };
+  const Screen = screens[activeTab];
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: 20 }}>
+      <IOSDevice width={390} height={844}>
+        <div style={{ position: 'relative', height: '100%', overflow: 'hidden' }}>
+          <Screen tweaks={tweaks} />
+          <BottomNav active={activeTab} setActive={setActiveTab} />
+        </div>
+      </IOSDevice>
+
+      {/* Tweaks Panel */}
+      {showTweaks && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
+          background: '#fff', borderRadius: 20,
+          boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+          padding: '20px', width: 280,
+          border: '1px solid rgba(0,0,0,0.08)',
+          fontFamily: 'Inter, sans-serif',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <span style={{ fontWeight: 700, fontSize: 15, color: '#1A1A1A' }}>Tweaks</span>
+            <button onClick={() => {
+              setShowTweaks(false);
+              window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+            }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#999' }}>✕</button>
+          </div>
+
+          {[
+            { label: 'Dorm Name', key: 'dormName', type: 'text' },
+            { label: 'Dorm Rank', key: 'dormRank', type: 'number', min: 1, max: 8 },
+            { label: 'Your Name', key: 'userName', type: 'text' },
+            { label: 'Games Attended', key: 'gamesAttended', type: 'number', min: 0, max: 50 },
+            { label: 'Streak (games)', key: 'currentStreak', type: 'number', min: 0, max: 20 },
+            { label: 'Total Points', key: 'totalPoints', type: 'number', min: 0, max: 9999 },
+          ].map(field => (
+            <div key={field.key} style={{ marginBottom: 12 }}>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#888', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.4 }}>
+                {field.label}
+              </label>
+              <input
+                type={field.type}
+                min={field.min}
+                max={field.max}
+                value={tweaks[field.key]}
+                onChange={e => setTweak(field.key, field.type === 'number' ? Number(e.target.value) : e.target.value)}
+                style={{
+                  width: '100%', padding: '8px 10px', borderRadius: 8,
+                  border: '1.5px solid #EEE', fontSize: 14, color: '#1A1A1A',
+                  fontFamily: 'Inter, sans-serif', outline: 'none',
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
