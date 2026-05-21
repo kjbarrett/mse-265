@@ -27,6 +27,7 @@
 <div id="root"></div>
 
 <script type="text/babel">
+
 const CARDINAL = '#8C1515';
 const CARDINAL_DARK = '#6B1010';
 const CARDINAL_LIGHT = '#F9EFEF';
@@ -79,6 +80,51 @@ const ATTENDEES_SEED = {
   ],
 };
 
+// ── Friends & social data ─────────────────────────────────────
+const ALL_FRIENDS = [
+  { name: 'Jordan K.', dorm: 'FloMo', color: '#E07B54', initials: 'JK', games: 18, streak: 5 },
+  { name: 'Priya M.', dorm: 'Stern', color: '#5B8DD9', initials: 'PM', games: 15, streak: 3 },
+  { name: 'Tyler H.', dorm: 'Toyon Hall', color: '#48A868', initials: 'TH', games: 12, streak: 2 },
+  { name: 'Sasha L.', dorm: 'Branner', color: '#9B59B6', initials: 'SL', games: 20, streak: 7 },
+  { name: 'Marcus W.', dorm: 'Roble', color: '#E74C3C', initials: 'MW', games: 9, streak: 1 },
+  { name: 'Nina T.', dorm: 'Larkin', color: '#F39C12', initials: 'NT', games: 14, streak: 4 },
+  { name: 'Cam R.', dorm: 'Wilbur', color: '#1ABC9C', initials: 'CR', games: 11, streak: 3 },
+  { name: 'Leila A.', dorm: 'FloMo', color: '#E91E8C', initials: 'LA', games: 22, streak: 8 },
+];
+
+const FRIEND_ACTIVITY = [
+  { person: ALL_FRIENDS[0], action: 'attended', game: 'Football vs. USC', time: '2h ago', pts: 100, icon: '🏈' },
+  { person: ALL_FRIENDS[3], action: 'hit a 7-game streak', game: null, time: '5h ago', pts: null, icon: '🔥' },
+  { person: ALL_FRIENDS[7], action: 'attended', game: "Women's Soccer vs. UCLA", time: '1d ago', pts: 75, icon: '⚽' },
+  { person: ALL_FRIENDS[1], action: 'earned a badge', game: 'Tree Gang 🌲', time: '1d ago', pts: null, icon: '🏅' },
+  { person: ALL_FRIENDS[5], action: 'attended', game: 'Baseball vs. Oregon', time: '2d ago', pts: 50, icon: '⚾' },
+  { person: ALL_FRIENDS[2], action: 'joined a challenge', game: 'Weekend Warriors', time: '2d ago', pts: null, icon: '⚡' },
+];
+
+const CHALLENGES = [
+  { id: 1, name: 'Weekend Warriors', desc: 'Attend 3 games in one weekend with friends', reward: '300 pts', deadline: 'May 11', difficulty: 'Medium', joined: false },
+  { id: 2, name: 'Sport Sampler', desc: 'Attend 4 different sports with friends', reward: '500 pts', deadline: 'May 31', difficulty: 'Hard', joined: true },
+  { id: 3, name: 'Early Birds', desc: 'Check in before tip-off with friends', reward: '150 pts', deadline: 'May 14', difficulty: 'Easy', joined: false },
+];
+
+// ── Perks data ────────────────────────────────────────────────
+const PERKS = [
+  { id: 1, pts: 500, title: 'Free Concessions', desc: '$5 credit at Stanford Stadium concessions', icon: '🌭', unlocked: true },
+  { id: 2, pts: 1000, title: 'Priority Seating', desc: 'Early entry + preferred section access', icon: '🎟️', unlocked: true },
+  { id: 3, pts: 1500, title: 'Cardinal Gear', desc: '$20 Stanford Store gift card', icon: '👕', unlocked: false },
+  { id: 4, pts: 2000, title: 'Meet the Team', desc: 'Post-game locker room access (football)', icon: '🏈', unlocked: false },
+  { id: 5, pts: 3000, title: 'Season Pass', desc: 'Free tickets to all home games next season', icon: '🏟️', unlocked: false },
+];
+
+// ── Reminders ─────────────────────────────────────────────────
+const REMINDERS_DATA = [
+  { id: 1, type: 'game', title: 'Football tomorrow!', body: 'Your friends are going — don\'t miss it 🔥', time: '2h ago', read: false, icon: '🏈' },
+  { id: 2, type: 'friend', title: 'Jordan checked in', body: 'Jordan K. just attended Football vs. USC', time: '3h ago', read: false, icon: '👤' },
+  { id: 3, type: 'challenge', title: 'Challenge progress', body: 'Sport Sampler: 2/4 sports done — keep going!', time: '1d ago', read: true, icon: '⚡' },
+  { id: 4, type: 'rank', title: 'Toyon moved up!', body: 'Your dorm climbed to #3 on the leaderboard', time: '1d ago', read: true, icon: '📈' },
+  { id: 5, type: 'perk', title: 'New perk unlocked', body: 'You\'ve earned Priority Seating — claim it now', time: '2d ago', read: true, icon: '🎟️' },
+];
+
 // ── Data ─────────────────────────────────────────────────────
 const LEADERBOARD = [
   { rank: 1, dorm: 'FloMo', points: 2340, games: 22, change: 'up' },
@@ -108,29 +154,42 @@ const UPCOMING_GAMES = [
 ];
 
 // ── NavBar ────────────────────────────────────────────────────
-function BottomNav({ active, setActive }) {
+function BottomNav({ active, setActive, notifCount }) {
   const tabs = [
-    { id: 'home', label: 'Leaderboard', icon: (active) => (
+    { id: 'home', label: 'Home', icon: (on) => (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <rect x="2" y="14" width="5" height="8" rx="1" fill={active ? CARDINAL : '#B0B0B0'}/>
-        <rect x="9.5" y="9" width="5" height="13" rx="1" fill={active ? CARDINAL : '#B0B0B0'}/>
-        <rect x="17" y="4" width="5" height="18" rx="1" fill={active ? CARDINAL : '#B0B0B0'}/>
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z" stroke={on ? CARDINAL : '#B0B0B0'} strokeWidth="2" strokeLinejoin="round"/>
+        <path d="M9 21V12h6v9" stroke={on ? CARDINAL : '#B0B0B0'} strokeWidth="2" strokeLinejoin="round"/>
       </svg>
     )},
-    { id: 'games', label: 'Games', icon: (active) => (
+    { id: 'leaderboard', label: 'Standings', icon: (on) => (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="4" width="18" height="18" rx="3" stroke={active ? CARDINAL : '#B0B0B0'} strokeWidth="2"/>
-        <path d="M3 9h18" stroke={active ? CARDINAL : '#B0B0B0'} strokeWidth="2"/>
-        <circle cx="8" cy="14" r="1.5" fill={active ? CARDINAL : '#B0B0B0'}/>
-        <circle cx="12" cy="14" r="1.5" fill={active ? CARDINAL : '#B0B0B0'}/>
-        <circle cx="16" cy="14" r="1.5" fill={active ? CARDINAL : '#B0B0B0'}/>
-        <path d="M8 4V2M16 4V2" stroke={active ? CARDINAL : '#B0B0B0'} strokeWidth="2" strokeLinecap="round"/>
+        <rect x="2" y="14" width="5" height="8" rx="1" fill={on ? CARDINAL : '#B0B0B0'}/>
+        <rect x="9.5" y="9" width="5" height="13" rx="1" fill={on ? CARDINAL : '#B0B0B0'}/>
+        <rect x="17" y="4" width="5" height="18" rx="1" fill={on ? CARDINAL : '#B0B0B0'}/>
       </svg>
     )},
-    { id: 'profile', label: 'My Profile', icon: (active) => (
+    { id: 'games', label: 'Games', icon: (on) => (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="8" r="4" stroke={active ? CARDINAL : '#B0B0B0'} strokeWidth="2"/>
-        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke={active ? CARDINAL : '#B0B0B0'} strokeWidth="2" strokeLinecap="round"/>
+        <rect x="3" y="4" width="18" height="18" rx="3" stroke={on ? CARDINAL : '#B0B0B0'} strokeWidth="2"/>
+        <path d="M3 9h18" stroke={on ? CARDINAL : '#B0B0B0'} strokeWidth="2"/>
+        <circle cx="8" cy="14" r="1.5" fill={on ? CARDINAL : '#B0B0B0'}/>
+        <circle cx="12" cy="14" r="1.5" fill={on ? CARDINAL : '#B0B0B0'}/>
+        <circle cx="16" cy="14" r="1.5" fill={on ? CARDINAL : '#B0B0B0'}/>
+        <path d="M8 4V2M16 4V2" stroke={on ? CARDINAL : '#B0B0B0'} strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+    )},
+    { id: 'social', label: 'Friends', icon: (on) => (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="9" cy="8" r="3.5" stroke={on ? CARDINAL : '#B0B0B0'} strokeWidth="2"/>
+        <path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6" stroke={on ? CARDINAL : '#B0B0B0'} strokeWidth="2" strokeLinecap="round"/>
+        <path d="M17 12v6M14 15h6" stroke={on ? CARDINAL : '#B0B0B0'} strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+    ), badge: notifCount },
+    { id: 'profile', label: 'Profile', icon: (on) => (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="8" r="4" stroke={on ? CARDINAL : '#B0B0B0'} strokeWidth="2"/>
+        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke={on ? CARDINAL : '#B0B0B0'} strokeWidth="2" strokeLinecap="round"/>
       </svg>
     )},
   ];
@@ -142,20 +201,28 @@ function BottomNav({ active, setActive }) {
       backdropFilter: 'blur(20px)',
       borderTop: '1px solid rgba(0,0,0,0.08)',
       display: 'flex', alignItems: 'flex-start', justifyContent: 'space-around',
-      paddingTop: 10, paddingBottom: 0, zIndex: 100,
+      paddingTop: 10, zIndex: 100,
     }}>
       {tabs.map(tab => (
         <button key={tab.id} onClick={() => setActive(tab.id)} style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-          background: 'none', border: 'none', cursor: 'pointer', padding: '4px 16px',
-          transition: 'transform 0.1s',
+          background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px',
+          position: 'relative',
         }}>
           {tab.icon(active === tab.id)}
+          {tab.badge > 0 && (
+            <div style={{
+              position: 'absolute', top: 0, right: 4,
+              width: 16, height: 16, borderRadius: 8,
+              background: CARDINAL, border: '2px solid #fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 9, fontWeight: 800, color: '#fff',
+            }}>{tab.badge}</div>
+          )}
           <span style={{
-            fontSize: 11, fontWeight: active === tab.id ? 600 : 400,
+            fontSize: 10, fontWeight: active === tab.id ? 600 : 400,
             color: active === tab.id ? CARDINAL : '#999',
             fontFamily: 'Inter, sans-serif',
-            transition: 'color 0.15s',
           }}>{tab.label}</span>
         </button>
       ))}
@@ -163,26 +230,270 @@ function BottomNav({ active, setActive }) {
   );
 }
 
-// ── Screen: Home / Leaderboard ────────────────────────────────
-function HomeScreen({ tweaks }) {
-  const { dormName, dormRank } = tweaks;
-  const boards = LEADERBOARD.map(d => d.dorm === dormName ? { ...d, dorm: dormName, rank: dormRank, isYours: true } : d);
+// ── Onboarding ────────────────────────────────────────────────
+function OnboardingScreen({ onComplete }) {
+  const [step, setStep] = React.useState('email'); // email | confirm | welcome
+  const [email, setEmail] = React.useState('');
+  const [emailError, setEmailError] = React.useState('');
+
+  const handleJoin = () => {
+    if (!email.includes('@stanford.edu')) {
+      setEmailError('Please use your @stanford.edu email');
+      return;
+    }
+    setEmailError('');
+    setStep('confirm');
+    setTimeout(() => setStep('welcome'), 1800);
+    setTimeout(() => onComplete(), 3600);
+  };
+
+  if (step === 'email') return (
+    <div style={{ height: '100%', background: '#fff', display: 'flex', flexDirection: 'column' }}>
+      {/* Hero */}
+      <div style={{
+        background: `linear-gradient(160deg, ${CARDINAL} 0%, #6B1010 100%)`,
+        paddingTop: 100, paddingBottom: 40, paddingLeft: 28, paddingRight: 28,
+        flex: '0 0 auto',
+      }}>
+        <div style={{ marginBottom: 16 }}>
+          <span style={{ fontSize: 52 }}>🌲</span>
+        </div>
+        <h1 style={{ color: '#fff', fontSize: 34, fontWeight: 900, lineHeight: 1.1, letterSpacing: -0.5, marginBottom: 10 }}>
+          The Cardinal
+        </h1>
+        <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 16, lineHeight: '22px' }}>
+          Show up. Earn points. Win prizes for your dorm.
+        </p>
+      </div>
+
+      {/* Form */}
+      <div style={{ flex: 1, padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {/* Value props */}
+        {[
+          { icon: '🏆', text: 'Compete dorm vs. dorm all season' },
+          { icon: '⭐', text: 'Earn points for every game you attend' },
+          { icon: '🎁', text: 'Win prizes at 500, 1000 & 2000 pts' },
+        ].map((v, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 20 }}>{v.icon}</span>
+            <span style={{ fontSize: 14, color: '#444', fontWeight: 500 }}>{v.text}</span>
+          </div>
+        ))}
+
+        <div style={{ marginTop: 8 }}>
+          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#888', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>Stanford Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => { setEmail(e.target.value); setEmailError(''); }}
+            placeholder="sunetid@stanford.edu"
+            style={{
+              width: '100%', padding: '13px 14px', borderRadius: 13,
+              border: emailError ? `1.5px solid #EF4444` : '1.5px solid #E8E8E8',
+              fontSize: 15, fontFamily: 'Inter, sans-serif', outline: 'none',
+              boxSizing: 'border-box', color: '#1A1A1A',
+            }}
+          />
+          {emailError && <p style={{ fontSize: 12, color: '#EF4444', marginTop: 5 }}>{emailError}</p>}
+        </div>
+
+        <button onClick={handleJoin} style={{
+          width: '100%', padding: '15px',
+          background: `linear-gradient(135deg, ${CARDINAL}, ${CARDINAL_DARK})`,
+          color: '#fff', borderRadius: 13, border: 'none',
+          fontSize: 16, fontWeight: 800, cursor: 'pointer',
+          boxShadow: `0 4px 16px ${CARDINAL}55`,
+        }}>
+          Join with Stanford Email →
+        </button>
+
+        <p style={{ fontSize: 11, color: '#CCC', textAlign: 'center', lineHeight: '16px' }}>
+          Stanford Athletics · DAPER · Spring 2026
+        </p>
+      </div>
+    </div>
+  );
+
+  if (step === 'confirm') return (
+    <div style={{
+      height: '100%', background: CARDINAL,
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      padding: '40px 28px',
+    }}>
+      <div style={{
+        width: 80, height: 80, borderRadius: 40,
+        background: 'rgba(255,255,255,0.15)', border: '3px solid rgba(255,255,255,0.4)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 36, marginBottom: 24,
+        animation: 'pulse 0.6s ease-out',
+      }}>🌲</div>
+      <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>Welcome to</p>
+      <h2 style={{ color: '#fff', fontSize: 32, fontWeight: 900, textAlign: 'center', lineHeight: 1.1, marginBottom: 8 }}>Team Toyon Hall</h2>
+      <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 15, textAlign: 'center', lineHeight: '21px' }}>
+        You've been assigned to Toyon Hall.<br/>Let's climb the leaderboard!
+      </p>
+      <div style={{ marginTop: 28, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ width: 8, height: 8, borderRadius: 4, background: 'rgba(255,255,255,0.4)' }} />
+        <div style={{ width: 20, height: 8, borderRadius: 4, background: '#fff' }} />
+        <div style={{ width: 8, height: 8, borderRadius: 4, background: 'rgba(255,255,255,0.4)' }} />
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{
+      height: '100%', background: '#fff',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      padding: '40px 28px',
+    }}>
+      <div style={{ fontSize: 60, marginBottom: 20 }}>🎉</div>
+      <h2 style={{ fontSize: 26, fontWeight: 900, color: '#1A1A1A', textAlign: 'center', marginBottom: 10 }}>You're all set!</h2>
+      <p style={{ fontSize: 15, color: '#888', textAlign: 'center', lineHeight: '22px' }}>Taking you to your home screen…</p>
+      <div style={{ marginTop: 20, width: 40, height: 4, borderRadius: 2, background: '#F0F0F0', overflow: 'hidden' }}>
+        <div style={{ width: '100%', height: '100%', background: CARDINAL, borderRadius: 2, animation: 'none' }} />
+      </div>
+    </div>
+  );
+}
+
+// ── Screen: Home ──────────────────────────────────────────────
+function HomeScreen({ tweaks, onCheckIn }) {
+  const { dormName, dormRank, userName, totalPoints, currentStreak, gamesAttended } = tweaks;
+  const nextGame = UPCOMING_GAMES[0];
 
   return (
     <div style={{ height: '100%', overflowY: 'auto', paddingBottom: 90, background: '#FAFAFA' }}>
       {/* Header */}
-      <div style={{
-        background: CARDINAL, paddingTop: 58, paddingBottom: 20, paddingLeft: 20, paddingRight: 20,
-      }}>
+      <div style={{ background: CARDINAL, paddingTop: 58, paddingBottom: 20, paddingLeft: 20, paddingRight: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>The Cardinal</span>
+              <span style={{ fontSize: 16 }}>🌲</span>
+            </div>
+            <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 12, marginTop: 1 }}>Spring 2026</p>
+          </div>
+          <div style={{
+            background: 'rgba(255,255,255,0.15)', borderRadius: 12, padding: '8px 14px',
+            border: '1px solid rgba(255,255,255,0.25)', textAlign: 'center',
+          }}>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>{dormName}</p>
+            <p style={{ color: '#FFD700', fontSize: 20, fontWeight: 900 }}>Rank #{dormRank}</p>
+          </div>
+        </div>
+
+        {/* Personal stats row */}
+        <div style={{ display: 'flex', gap: 8 }}>
+          {[
+            { label: 'My Points', value: totalPoints.toLocaleString(), color: '#FFD700' },
+            { label: 'Streak', value: `${currentStreak}🔥` },
+            { label: 'Games', value: gamesAttended },
+          ].map((s, i) => (
+            <div key={i} style={{
+              flex: 1, background: 'rgba(255,255,255,0.13)',
+              borderRadius: 11, padding: '9px 8px', textAlign: 'center',
+              border: '1px solid rgba(255,255,255,0.18)',
+            }}>
+              <p style={{ color: s.color || '#fff', fontSize: 18, fontWeight: 800 }}>{s.value}</p>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 10, fontWeight: 600, marginTop: 1 }}>{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Next game card */}
+      <div style={{ padding: '14px 12px 0' }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#AAA', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Next Game</p>
+        <div style={{
+          background: '#fff', borderRadius: 16, overflow: 'hidden',
+          boxShadow: `0 2px 16px ${CARDINAL}22`,
+          border: `1.5px solid ${CARDINAL}33`,
+        }}>
+          <div style={{ height: 4, background: `linear-gradient(90deg, ${CARDINAL}, #E85555)` }} />
+          <div style={{ padding: '14px 16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 26 }}>{nextGame.icon}</span>
+                <div>
+                  <p style={{ fontSize: 16, fontWeight: 800, color: '#1A1A1A' }}>{nextGame.sport}</p>
+                  <p style={{ fontSize: 13, color: '#666' }}>{nextGame.opponent}</p>
+                </div>
+              </div>
+              <div style={{ background: CARDINAL_LIGHT, borderRadius: 10, padding: '6px 12px' }}>
+                <span style={{ fontSize: 14, fontWeight: 800, color: CARDINAL }}>+{nextGame.points} pts</span>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 16, marginBottom: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="3" stroke="#BBB" strokeWidth="2"/><path d="M3 9h18" stroke="#BBB" strokeWidth="2"/><path d="M8 2v4M16 2v4" stroke="#BBB" strokeWidth="2" strokeLinecap="round"/></svg>
+                <span style={{ fontSize: 12, color: '#888' }}>{nextGame.date}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#BBB" strokeWidth="2"/><path d="M12 7v5l3 3" stroke="#BBB" strokeWidth="2" strokeLinecap="round"/></svg>
+                <span style={{ fontSize: 12, color: '#888' }}>{nextGame.time}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <svg width="12" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#BBB" strokeWidth="2"/><circle cx="12" cy="9" r="2.5" stroke="#BBB" strokeWidth="2"/></svg>
+                <span style={{ fontSize: 12, color: '#888' }}>{nextGame.venue}</span>
+              </div>
+            </div>
+            <button onClick={onCheckIn} style={{
+              width: '100%', padding: '13px',
+              background: `linear-gradient(135deg, ${CARDINAL}, ${CARDINAL_DARK})`,
+              color: '#fff', borderRadius: 12, border: 'none',
+              fontSize: 15, fontWeight: 700, cursor: 'pointer',
+              boxShadow: `0 4px 12px ${CARDINAL}44`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/></svg>
+              Check In to This Game
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Dorm standing teaser */}
+      <div style={{ padding: '14px 12px 0' }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#AAA', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Dorm Standing</p>
+        <div style={{ background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 1px 8px rgba(0,0,0,0.06)' }}>
+          {LEADERBOARD.slice(0, 4).map((dorm, i) => {
+            const isYours = dorm.dorm === dormName;
+            const rankColor = i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : '#CCC';
+            return (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', padding: '10px 14px',
+                borderBottom: i < 3 ? '1px solid #F5F5F5' : 'none',
+                background: isYours ? CARDINAL_LIGHT : '#fff',
+              }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: rankColor, width: 20 }}>{i + 1}</span>
+                <span style={{ flex: 1, fontSize: 14, fontWeight: isYours ? 700 : 400, color: isYours ? CARDINAL : '#1A1A1A', marginLeft: 10 }}>{dorm.dorm}</span>
+                {dorm.change === 'up' && <span style={{ fontSize: 11, color: '#22C55E', marginRight: 8 }}>▲</span>}
+                {dorm.change === 'down' && <span style={{ fontSize: 11, color: '#EF4444', marginRight: 8 }}>▼</span>}
+                {dorm.change === 'same' && <span style={{ fontSize: 11, color: '#BBB', marginRight: 8 }}>—</span>}
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A' }}>{dorm.points.toLocaleString()}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Screen: Leaderboard ───────────────────────────────────────
+function LeaderboardScreen({ tweaks }) {
+  const { dormName, dormRank } = tweaks;
+  const boards = LEADERBOARD.map(d => d.dorm === dormName ? { ...d, rank: dormRank, isYours: true } : d);
+  return (
+    <div style={{ height: '100%', overflowY: 'auto', paddingBottom: 90, background: '#FAFAFA' }}>
+      <div style={{ background: CARDINAL, paddingTop: 58, paddingBottom: 20, paddingLeft: 20, paddingRight: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
           <span style={{ fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: -0.5 }}>The Cardinal</span>
           <span style={{ fontSize: 18 }}>🌲</span>
         </div>
-        <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, fontWeight: 400 }}>Spring 2026 Season</p>
-        {/* Dorm rank banner */}
+        <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13 }}>Spring 2026 Season</p>
         <div style={{
-          marginTop: 14, background: 'rgba(255,255,255,0.15)',
-          borderRadius: 12, padding: '10px 14px',
+          marginTop: 14, background: 'rgba(255,255,255,0.15)', borderRadius: 12, padding: '10px 14px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           border: '1px solid rgba(255,255,255,0.25)',
         }}>
@@ -196,38 +507,20 @@ function HomeScreen({ tweaks }) {
           </div>
         </div>
       </div>
-
-      {/* Season stats strip */}
-      <div style={{
-        display: 'flex', background: '#fff',
-        borderBottom: '1px solid #F0F0F0', padding: '12px 0',
-      }}>
-        {[
-          { label: 'Dorms', value: '8' },
-          { label: 'Total Games', value: '41' },
-          { label: 'Season', value: 'Spring' },
-        ].map((s, i) => (
-          <div key={i} style={{
-            flex: 1, textAlign: 'center',
-            borderRight: i < 2 ? '1px solid #F0F0F0' : 'none',
-          }}>
+      <div style={{ display: 'flex', background: '#fff', borderBottom: '1px solid #F0F0F0', padding: '12px 0' }}>
+        {[{ label: 'Dorms', value: '8' }, { label: 'Total Games', value: '41' }, { label: 'Season', value: 'Spring' }].map((s, i) => (
+          <div key={i} style={{ flex: 1, textAlign: 'center', borderRight: i < 2 ? '1px solid #F0F0F0' : 'none' }}>
             <div style={{ fontSize: 18, fontWeight: 800, color: '#1A1A1A' }}>{s.value}</div>
-            <div style={{ fontSize: 11, color: '#999', fontWeight: 500, marginTop: 1 }}>{s.label}</div>
+            <div style={{ fontSize: 11, color: '#999', marginTop: 1 }}>{s.label}</div>
           </div>
         ))}
       </div>
-
-      {/* Section label */}
-      <div style={{ padding: '16px 20px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ padding: '14px 20px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: '#999', textTransform: 'uppercase', letterSpacing: 0.5 }}>Dorm Rankings</span>
         <span style={{ fontSize: 12, color: '#BBB' }}>By points</span>
       </div>
-
-      {/* Leaderboard rows */}
       <div style={{ background: '#fff', margin: '0 12px', borderRadius: 16, overflow: 'hidden', boxShadow: '0 1px 8px rgba(0,0,0,0.06)' }}>
-        {boards.map((dorm, i) => (
-          <LeaderboardRow key={dorm.rank} dorm={dorm} isLast={i === boards.length - 1} />
-        ))}
+        {boards.map((dorm, i) => <LeaderboardRow key={i} dorm={dorm} isLast={i === boards.length - 1} />)}
       </div>
     </div>
   );
@@ -288,10 +581,272 @@ function LeaderboardRow({ dorm, isLast }) {
   );
 }
 
+// ── Screen: Check-in ─────────────────────────────────────────
+function CheckInScreen({ tweaks, onSuccess }) {
+  const [unlocked, setUnlocked] = React.useState(false);
+  const [word, setWord] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [verified, setVerified] = React.useState(false);
+  const [seconds, setSeconds] = React.useState(8 * 60 + 42);
+  const game = UPCOMING_GAMES[0];
+
+  React.useEffect(() => {
+    if (unlocked) return;
+    const t = setInterval(() => setSeconds(s => {
+      if (s <= 1) { clearInterval(t); setUnlocked(true); return 0; }
+      return s - 1;
+    }), 1000);
+    return () => clearInterval(t);
+  }, [unlocked]);
+
+  const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const secs = String(seconds % 60).padStart(2, '0');
+
+  const handleVerify = () => {
+    if (word.trim().toUpperCase() !== 'TREEFROG') {
+      setError('Incorrect word — try again');
+      return;
+    }
+    setError('');
+    setVerified(true);
+    setTimeout(() => onSuccess(), 1600);
+  };
+
+  return (
+    <div style={{ height: '100%', overflowY: 'auto', paddingBottom: 90, background: '#FAFAFA' }}>
+      {/* Header */}
+      <div style={{ background: CARDINAL, paddingTop: 58, paddingBottom: 20, paddingLeft: 20, paddingRight: 20 }}>
+        <p style={{ color: '#fff', fontSize: 22, fontWeight: 800, letterSpacing: -0.5 }}>Check In</p>
+        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, marginTop: 2 }}>{game.sport} {game.opponent} · {game.date}</p>
+      </div>
+
+      <div style={{ padding: '16px 16px 0' }}>
+        {/* Game card */}
+        <div style={{
+          background: '#fff', borderRadius: 16, padding: '14px 16px', marginBottom: 16,
+          boxShadow: '0 1px 8px rgba(0,0,0,0.06)', border: `1.5px solid ${CARDINAL}22`,
+          display: 'flex', alignItems: 'center', gap: 12,
+        }}>
+          <span style={{ fontSize: 28 }}>{game.icon}</span>
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: 15, fontWeight: 700, color: '#1A1A1A' }}>{game.sport} {game.opponent}</p>
+            <p style={{ fontSize: 12, color: '#888' }}>{game.venue} · {game.time}</p>
+          </div>
+          <div style={{ background: CARDINAL_LIGHT, borderRadius: 10, padding: '5px 10px' }}>
+            <span style={{ fontSize: 13, fontWeight: 800, color: CARDINAL }}>+{game.points} pts</span>
+          </div>
+        </div>
+
+        {/* Locked state */}
+        {!unlocked && !verified && (
+          <div style={{
+            background: '#1A1A1A', borderRadius: 20, padding: '32px 24px',
+            textAlign: 'center', marginBottom: 16,
+            boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+          }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>
+              Check-in opens in
+            </p>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: 'rgba(255,255,255,0.08)', borderRadius: 14, padding: '10px 20px',
+              marginBottom: 14,
+            }}>
+              <span style={{ fontFamily: 'monospace', fontSize: 32, fontWeight: 900, color: '#fff', letterSpacing: 3 }}>{mins}:{secs}</span>
+            </div>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, lineHeight: '18px' }}>
+              The secret check-in word unlocks 15 minutes before game time
+            </p>
+            <button onClick={() => setUnlocked(true)} style={{
+              marginTop: 20, padding: '10px 22px', borderRadius: 999,
+              background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+              color: 'rgba(255,255,255,0.6)', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+              fontFamily: 'Inter, sans-serif',
+            }}>Skip timer (demo)</button>
+          </div>
+        )}
+
+        {/* Unlocked — word entry */}
+        {(unlocked && !verified) && (
+          <div style={{
+            background: '#fff', borderRadius: 20, padding: '24px 20px',
+            boxShadow: `0 4px 24px ${CARDINAL}22`, border: `1.5px solid ${CARDINAL}33`,
+            marginBottom: 16,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: 12, background: CARDINAL_LIGHT,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+              }}>🔓</div>
+              <div>
+                <p style={{ fontSize: 16, fontWeight: 800, color: '#1A1A1A' }}>Check-in is open!</p>
+                <p style={{ fontSize: 12, color: '#888' }}>Enter today's secret word</p>
+              </div>
+            </div>
+
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#888', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>Secret Word</label>
+            <input
+              value={word}
+              onChange={e => { setWord(e.target.value.toUpperCase()); setError(''); }}
+              placeholder="Enter secret word…"
+              maxLength={12}
+              style={{
+                width: '100%', padding: '13px 14px', borderRadius: 12,
+                border: error ? '1.5px solid #EF4444' : '1.5px solid #E8E8E8',
+                fontSize: 20, fontFamily: 'monospace', fontWeight: 800,
+                letterSpacing: 4, color: CARDINAL, outline: 'none',
+                textAlign: 'center', boxSizing: 'border-box',
+                marginBottom: error ? 6 : 14,
+              }}
+            />
+            {error && <p style={{ fontSize: 12, color: '#EF4444', marginBottom: 10, textAlign: 'center' }}>{error}</p>}
+
+            <button onClick={handleVerify} style={{
+              width: '100%', padding: '14px',
+              background: `linear-gradient(135deg, ${CARDINAL}, ${CARDINAL_DARK})`,
+              color: '#fff', borderRadius: 12, border: 'none',
+              fontSize: 15, fontWeight: 800, cursor: 'pointer',
+              boxShadow: `0 4px 14px ${CARDINAL}44`,
+            }}>Verify Attendance →</button>
+            <p style={{ fontSize: 11, color: '#BBB', textAlign: 'center', marginTop: 10 }}>Hint: it's TREEFROG</p>
+          </div>
+        )}
+
+        {/* Verified state */}
+        {verified && (
+          <div style={{
+            background: '#22C55E', borderRadius: 20, padding: '32px 24px',
+            textAlign: 'center', boxShadow: '0 8px 30px rgba(34,197,94,0.35)',
+          }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
+            <p style={{ color: '#fff', fontSize: 22, fontWeight: 900, marginBottom: 6 }}>Attendance Verified!</p>
+            <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14 }}>+{game.points} pts added to your total</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Screen: Photo Upload ──────────────────────────────────────
+function PhotoUploadScreen({ tweaks, onDone }) {
+  const [shared, setShared] = React.useState(false);
+  const [uploaded, setUploaded] = React.useState(false);
+
+  const FEED_PHOTOS = [
+    { initials: 'JK', color: '#E07B54', caption: 'Stanford Stadium energy tonight 🔥', time: '2m ago' },
+    { initials: 'LA', color: '#E91E8C', caption: 'Toyon in full force!! 🌲🌲', time: '5m ago' },
+    { initials: 'SL', color: '#9B59B6', caption: 'Nothing like a night game', time: '8m ago' },
+  ];
+
+  return (
+    <div style={{ height: '100%', overflowY: 'auto', paddingBottom: 90, background: '#FAFAFA' }}>
+      {/* Header */}
+      <div style={{ background: CARDINAL, paddingTop: 58, paddingBottom: 20, paddingLeft: 20, paddingRight: 20 }}>
+        <p style={{ color: '#fff', fontSize: 22, fontWeight: 800, letterSpacing: -0.5 }}>Game Photo</p>
+        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, marginTop: 2 }}>Share your experience with the dorm</p>
+      </div>
+
+      <div style={{ padding: '16px 16px 0' }}>
+        {/* Upload area */}
+        <div style={{
+          background: '#fff', borderRadius: 18, padding: '28px 20px',
+          textAlign: 'center', marginBottom: 14,
+          border: uploaded ? `2px solid #22C55E` : '2px dashed #E0E0E0',
+          boxShadow: '0 1px 8px rgba(0,0,0,0.05)',
+          transition: 'border 0.3s',
+        }}>
+          {!uploaded ? (
+            <>
+              <div style={{
+                width: 72, height: 72, borderRadius: 20, background: CARDINAL_LIGHT,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto 16px', fontSize: 32,
+              }}>📷</div>
+              <p style={{ fontSize: 16, fontWeight: 700, color: '#1A1A1A', marginBottom: 6 }}>Upload Game Photo</p>
+              <p style={{ fontSize: 13, color: '#AAA', marginBottom: 18, lineHeight: '18px' }}>Show Toyon Hall what you're seeing from the stands</p>
+              <button onClick={() => setUploaded(true)} style={{
+                padding: '12px 28px', background: CARDINAL, color: '#fff',
+                borderRadius: 12, border: 'none', fontSize: 15, fontWeight: 700, cursor: 'pointer',
+                boxShadow: `0 4px 14px ${CARDINAL}44`,
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#fff" strokeWidth="2" strokeLinecap="round"/><circle cx="12" cy="13" r="4" stroke="#fff" strokeWidth="2"/></svg>
+                Open Camera
+              </button>
+            </>
+          ) : (
+            <>
+              <div style={{
+                width: '100%', height: 160, borderRadius: 14, background: `linear-gradient(135deg, ${CARDINAL}44, #1A1A1A)`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12,
+                fontSize: 40,
+              }}>🏈</div>
+              <p style={{ fontSize: 14, fontWeight: 700, color: '#22C55E' }}>✓ Photo ready to share</p>
+            </>
+          )}
+        </div>
+
+        {/* Share button */}
+        <button onClick={() => { setShared(true); setTimeout(onDone, 1400); }} style={{
+          width: '100%', padding: '14px', marginBottom: 14,
+          background: shared ? '#22C55E' : `linear-gradient(135deg, ${CARDINAL}, ${CARDINAL_DARK})`,
+          color: '#fff', borderRadius: 13, border: 'none',
+          fontSize: 15, fontWeight: 800, cursor: 'pointer',
+          boxShadow: shared ? '0 4px 14px rgba(34,197,94,0.4)' : `0 4px 14px ${CARDINAL}44`,
+          transition: 'background 0.3s',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+        }}>
+          {shared ? '✓ Shared to Dorm Feed!' : '🌲 Share to Dorm Feed'}
+        </button>
+
+        <button onClick={onDone} style={{
+          width: '100%', padding: '12px', background: '#F5F5F5',
+          color: '#888', borderRadius: 13, border: 'none', fontSize: 14,
+          fontWeight: 600, cursor: 'pointer', marginBottom: 18,
+        }}>Skip for now</button>
+
+        {/* Dorm feed preview */}
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#AAA', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Dorm Feed · Live</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {FEED_PHOTOS.map((p, i) => (
+            <div key={i} style={{
+              background: '#fff', borderRadius: 14, overflow: 'hidden',
+              boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
+            }}>
+              {/* Photo placeholder */}
+              <div style={{
+                height: 120, background: `linear-gradient(135deg, ${p.color}44, ${p.color}22)`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32,
+              }}>🏟️</div>
+              <div style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{
+                  width: 30, height: 30, borderRadius: 15, background: p.color,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0,
+                }}>{p.initials}</div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 13, color: '#1A1A1A', lineHeight: '17px' }}>{p.caption}</p>
+                </div>
+                <span style={{ fontSize: 11, color: '#CCC', flexShrink: 0 }}>{p.time}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Screen: Profile ──────────────────────────────────────────
 function ProfileScreen({ tweaks }) {
-  const { userName, gamesAttended, currentStreak, totalPoints, dormName } = tweaks;
+  const { userName, gamesAttended, currentStreak, totalPoints, dormName, dormRank } = tweaks;
   const [referralSent, setReferralSent] = React.useState(false);
+  const PRIZE_THRESHOLD = 1000;
+  const prizeProgress = Math.min(100, (totalPoints / PRIZE_THRESHOLD) * 100);
+  const isEligible = totalPoints >= PRIZE_THRESHOLD;
+  const dormWinning = dormRank === 1;
 
   return (
     <div style={{ height: '100%', overflowY: 'auto', paddingBottom: 90, background: '#FAFAFA' }}>
@@ -300,18 +855,23 @@ function ProfileScreen({ tweaks }) {
         background: CARDINAL, paddingTop: 58, paddingBottom: 28, paddingLeft: 20, paddingRight: 20,
         textAlign: 'center',
       }}>
-        {/* Avatar */}
         <div style={{
           width: 72, height: 72, borderRadius: 36,
-          background: 'rgba(255,255,255,0.2)',
-          border: '3px solid rgba(255,255,255,0.5)',
+          background: 'rgba(255,255,255,0.2)', border: '3px solid rgba(255,255,255,0.5)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           margin: '0 auto 12px', fontSize: 28,
         }}>🌲</div>
-        <p style={{ color: '#fff', fontSize: 20, fontWeight: 800 }}>{userName}</p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+          <p style={{ color: '#fff', fontSize: 20, fontWeight: 800 }}>{userName}</p>
+          {(isEligible || dormWinning) && (
+            <span style={{
+              fontSize: 10, fontWeight: 700, color: CARDINAL,
+              background: '#FFD700', borderRadius: 6, padding: '2px 7px',
+              letterSpacing: 0.3,
+            }}>PRIZE ELIGIBLE</span>
+          )}
+        </div>
         <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, marginTop: 2 }}>{dormName}</p>
-
-        {/* Points pill */}
         <div style={{
           marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6,
           background: 'rgba(255,255,255,0.15)', borderRadius: 999, padding: '6px 14px',
@@ -329,73 +889,97 @@ function ProfileScreen({ tweaks }) {
         borderRadius: 16, boxShadow: '0 1px 8px rgba(0,0,0,0.06)', overflow: 'hidden',
       }}>
         {[
-          { label: 'Games Attended', value: gamesAttended, icon: '🏟️' },
-          { label: 'Current Streak', value: `${currentStreak}🔥`, icon: null },
-          { label: 'Season Rank', value: `#3`, icon: '🥉' },
+          { label: 'Games Attended', value: gamesAttended },
+          { label: 'Current Streak', value: `${currentStreak}🔥` },
+          { label: 'Dorm Rank', value: `#${dormRank}` },
         ].map((s, i) => (
           <div key={i} style={{
             flex: 1, padding: '14px 8px', textAlign: 'center',
             borderRight: i < 2 ? '1px solid #F0F0F0' : 'none',
           }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: '#1A1A1A' }}>{s.value}</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: '#1A1A1A' }}>{s.value}</div>
             <div style={{ fontSize: 11, color: '#999', marginTop: 2, lineHeight: '14px' }}>{s.label}</div>
           </div>
         ))}
       </div>
 
-      {/* Badges */}
-      <div style={{ padding: '16px 12px 8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1A1A' }}>Badges</span>
-          <span style={{ fontSize: 12, color: '#999' }}>{BADGES_DATA.filter(b=>b.earned).length}/{BADGES_DATA.length} earned</span>
-        </div>
+      {/* Prize eligibility progress bar */}
+      <div style={{ padding: '12px 12px 0' }}>
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10,
+          background: '#fff', borderRadius: 16, padding: '16px',
+          boxShadow: isEligible ? `0 2px 14px #22C55E33` : '0 1px 8px rgba(0,0,0,0.06)',
+          border: isEligible ? '1.5px solid #22C55E55' : `1.5px solid ${CARDINAL}22`,
         }}>
-          {BADGES_DATA.map(badge => (
-            <BadgeCard key={badge.id} badge={badge} />
-          ))}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <div>
+              <p style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A' }}>
+                {isEligible ? '🏅 Individual Prize Unlocked!' : '🎯 Prize Progress'}
+              </p>
+              <p style={{ fontSize: 12, color: '#888', marginTop: 2 }}>
+                {isEligible ? 'You qualify for the $50 Stanford Store gift card' : `${(PRIZE_THRESHOLD - totalPoints).toLocaleString()} pts to the 1,000-pt prize`}
+              </p>
+            </div>
+            {isEligible && (
+              <span style={{
+                fontSize: 10, fontWeight: 700, color: '#fff',
+                background: '#22C55E', borderRadius: 7, padding: '3px 8px',
+              }}>EARNED</span>
+            )}
+          </div>
+          <div style={{ height: 10, background: '#F0F0F0', borderRadius: 5, overflow: 'hidden', marginBottom: 6 }}>
+            <div style={{
+              height: '100%', borderRadius: 5,
+              width: `${prizeProgress}%`,
+              background: isEligible ? '#22C55E' : `linear-gradient(90deg, ${CARDINAL}, #E85555)`,
+              transition: 'width 0.8s',
+            }} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: isEligible ? '#22C55E' : CARDINAL }}>{totalPoints.toLocaleString()} pts</span>
+            <span style={{ fontSize: 11, color: '#BBB' }}>Goal: 1,000 pts</span>
+          </div>
         </div>
       </div>
 
-      {/* Referral section */}
-      <div style={{ padding: '8px 12px 8px' }}>
+      {/* Badges */}
+      <div style={{ padding: '12px 12px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1A1A' }}>Badges</span>
+          <span style={{ fontSize: 12, color: '#999' }}>{BADGES_DATA.filter(b => b.earned).length}/{BADGES_DATA.length} earned</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+          {BADGES_DATA.map(badge => <BadgeCard key={badge.id} badge={badge} />)}
+        </div>
+      </div>
+
+      {/* Perks */}
+      <PerksSection totalPoints={totalPoints} />
+
+      {/* Referral */}
+      <div style={{ padding: '0px 12px 16px' }}>
         <div style={{
           background: '#fff', borderRadius: 16, padding: '16px',
-          boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
-          border: `1.5px solid ${CARDINAL_LIGHT}`,
+          boxShadow: '0 1px 8px rgba(0,0,0,0.06)', border: `1.5px solid ${CARDINAL_LIGHT}`,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: 12,
-              background: CARDINAL_LIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 20,
-            }}>👥</div>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: CARDINAL_LIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>👥</div>
             <div>
               <p style={{ fontSize: 15, fontWeight: 700, color: '#1A1A1A' }}>Bring a Friend</p>
               <p style={{ fontSize: 12, color: '#999', marginTop: 1 }}>Earn 50 pts per referral</p>
             </div>
           </div>
-          <p style={{ fontSize: 13, color: '#666', lineHeight: '18px', marginBottom: 12 }}>
-            Invite a friend to join The Cardinal and earn bonus points when they attend their first game together with you.
-          </p>
-          <button
-            onClick={() => setReferralSent(true)}
-            style={{
-              width: '100%', padding: '12px',
-              background: referralSent ? '#22C55E' : CARDINAL,
-              color: '#fff', borderRadius: 12, border: 'none',
-              fontSize: 15, fontWeight: 700, cursor: 'pointer',
-              transition: 'background 0.3s',
-            }}
-          >
-            {referralSent ? '✓ Invite Sent!' : 'Share Invite Link'}
-          </button>
+          <button onClick={() => setReferralSent(true)} style={{
+            width: '100%', padding: '12px',
+            background: referralSent ? '#22C55E' : CARDINAL,
+            color: '#fff', borderRadius: 12, border: 'none',
+            fontSize: 15, fontWeight: 700, cursor: 'pointer', transition: 'background 0.3s',
+          }}>{referralSent ? '✓ Invite Sent!' : 'Share Invite Link'}</button>
         </div>
       </div>
     </div>
   );
 }
+
 
 function BadgeCard({ badge }) {
   return (
@@ -737,13 +1321,1115 @@ function GameCard({ game, isGoing, onGoing, attendees, userName }) {
   );
 }
 
+// ── Social Screen (Friends, Challenges, Alerts) ───────────────
+function SocialScreen({ tweaks }) {
+  const [subTab, setSubTab] = React.useState('friends');
+  const [reminders, setReminders] = React.useState(REMINDERS_DATA);
+  const [challenges, setChallenges] = React.useState(CHALLENGES);
+  const [showAddFriend, setShowAddFriend] = React.useState(false);
+  const [friendSearch, setFriendSearch] = React.useState('');
+  const [friends, setFriends] = React.useState(ALL_FRIENDS.slice(0, 5));
+  const [addedFriends, setAddedFriends] = React.useState([]);
+
+  const unreadCount = reminders.filter(r => !r.read).length;
+
+  const markAllRead = () => setReminders(prev => prev.map(r => ({ ...r, read: true })));
+
+  const toggleChallenge = (id) => {
+    setChallenges(prev => prev.map(c => c.id === id ? { ...c, joined: !c.joined } : c));
+  };
+
+  const filteredFriends = ALL_FRIENDS.filter(f =>
+    f.name.toLowerCase().includes(friendSearch.toLowerCase()) && !friends.find(ff => ff.name === f.name)
+  );
+
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#FAFAFA' }}>
+      {/* Header */}
+      <div style={{ background: CARDINAL, paddingTop: 58, paddingBottom: 0, paddingLeft: 20, paddingRight: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <div>
+            <p style={{ color: '#fff', fontSize: 22, fontWeight: 800, letterSpacing: -0.5 }}>Friends</p>
+            <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13 }}>Challenges, activity & alerts</p>
+          </div>
+          <button onClick={() => setShowAddFriend(true)} style={{
+            background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.3)',
+            borderRadius: 12, padding: '7px 12px', color: '#fff', fontSize: 13,
+            fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+          }}>
+            <span style={{ fontSize: 16 }}>+</span> Add Friend
+          </button>
+        </div>
+        {/* Sub-tabs */}
+        <div style={{ display: 'flex', gap: 0, background: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: 3 }}>
+          {[
+            { id: 'friends', label: 'Friends' },
+            { id: 'challenges', label: 'Challenges' },
+            { id: 'reminders', label: `Alerts${unreadCount > 0 ? ` (${unreadCount})` : ''}` },
+          ].map(t => (
+            <button key={t.id} onClick={() => setSubTab(t.id)} style={{
+              flex: 1, padding: '7px 4px', borderRadius: 9,
+              background: subTab === t.id ? '#fff' : 'transparent',
+              border: 'none', cursor: 'pointer',
+              fontSize: 11, fontWeight: subTab === t.id ? 700 : 500,
+              color: subTab === t.id ? CARDINAL : 'rgba(255,255,255,0.75)',
+              transition: 'all 0.15s',
+            }}>{t.label}</button>
+          ))}
+        </div>
+        <div style={{ height: 14 }} />
+      </div>
+
+      {/* Content */}
+      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 90 }}>
+
+        {/* FRIENDS */}
+        {subTab === 'friends' && (
+          <div style={{ padding: '12px 12px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <p style={{ fontSize: 12, color: '#AAA', fontWeight: 500, paddingLeft: 4, paddingBottom: 4 }}>FRIEND ACTIVITY</p>
+            {FRIEND_ACTIVITY.map((item, i) => (
+              <div key={i} style={{
+                background: '#fff', borderRadius: 14, padding: '12px 14px',
+                boxShadow: '0 1px 6px rgba(0,0,0,0.05)',
+                display: 'flex', alignItems: 'flex-start', gap: 10,
+              }}>
+                <Avatar person={item.person} size={36} />
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A', lineHeight: '18px' }}>
+                    <span style={{ color: item.person.color }}>{item.person.name.split(' ')[0]}</span>
+                    {' '}{item.action}
+                    {item.game && <span style={{ fontWeight: 700 }}> {item.game}</span>}
+                  </p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
+                    <span style={{ fontSize: 11, color: '#BBB' }}>{item.time}</span>
+                    {item.pts && (
+                      <span style={{
+                        fontSize: 11, fontWeight: 700, color: CARDINAL,
+                        background: CARDINAL_LIGHT, borderRadius: 6, padding: '1px 6px',
+                      }}>+{item.pts} pts</span>
+                    )}
+                  </div>
+                </div>
+                <span style={{ fontSize: 20 }}>{item.icon}</span>
+              </div>
+            ))}
+
+            <p style={{ fontSize: 12, color: '#AAA', fontWeight: 500, paddingLeft: 4, paddingTop: 8, paddingBottom: 4 }}>MY FRIENDS ({friends.length})</p>
+            {friends.map((f, i) => (
+              <div key={i} style={{
+                background: '#fff', borderRadius: 14, padding: '10px 14px',
+                display: 'flex', alignItems: 'center', gap: 10,
+                boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
+              }}>
+                <Avatar person={f} size={36} />
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: '#1A1A1A' }}>{f.name}</p>
+                  <p style={{ fontSize: 12, color: '#AAA' }}>{f.dorm} · {f.games} games · {f.streak}🔥 streak</p>
+                </div>
+                <div style={{
+                  width: 8, height: 8, borderRadius: 4,
+                  background: f.streak > 3 ? '#22C55E' : '#DDD',
+                }} />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* CHALLENGES */}
+        {subTab === 'challenges' && (
+          <div style={{ padding: '12px 12px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{
+              background: CARDINAL_LIGHT, borderRadius: 14, padding: '12px 14px',
+              border: `1px solid ${CARDINAL}22`,
+            }}>
+              <p style={{ fontSize: 13, color: CARDINAL, fontWeight: 600, lineHeight: '18px' }}>
+                🏆 Complete challenges with friends to earn bonus points!
+              </p>
+            </div>
+            {challenges.map(c => {
+              const diffColor = c.difficulty === 'Easy' ? '#22C55E' : c.difficulty === 'Medium' ? '#F59E0B' : '#EF4444';
+              return (
+                <div key={c.id} style={{
+                  background: '#fff', borderRadius: 16,
+                  boxShadow: c.joined ? `0 2px 14px ${CARDINAL}22` : '0 1px 8px rgba(0,0,0,0.06)',
+                  border: c.joined ? `1.5px solid ${CARDINAL}44` : '1.5px solid transparent',
+                  overflow: 'hidden',
+                }}>
+                  {c.joined && <div style={{ height: 3, background: `linear-gradient(90deg, ${CARDINAL}, #E85555)` }} />}
+                  <div style={{ padding: '14px 16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 6 }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                          <p style={{ fontSize: 15, fontWeight: 700, color: '#1A1A1A' }}>{c.name}</p>
+                          <span style={{
+                            fontSize: 10, fontWeight: 700, color: diffColor,
+                            background: diffColor + '18', borderRadius: 6, padding: '1px 6px',
+                          }}>{c.difficulty}</span>
+                        </div>
+                        <p style={{ fontSize: 13, color: '#666', lineHeight: '17px' }}>{c.desc}</p>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
+                      <div>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#F59E0B' }}>🏅 {c.reward}</span>
+                        <span style={{ fontSize: 12, color: '#BBB', marginLeft: 10 }}>· Due {c.deadline}</span>
+                      </div>
+                      <button onClick={() => toggleChallenge(c.id)} style={{
+                        padding: '8px 16px', borderRadius: 10,
+                        background: c.joined ? '#22C55E' : CARDINAL,
+                        color: '#fff', border: 'none', cursor: 'pointer',
+                        fontSize: 13, fontWeight: 700,
+                        transition: 'background 0.2s',
+                      }}>
+                        {c.joined ? '✓ Joined' : 'Join'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* REMINDERS */}
+        {subTab === 'reminders' && (
+          <div style={{ padding: '12px 12px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {unreadCount > 0 && (
+              <button onClick={markAllRead} style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontSize: 13, color: CARDINAL, fontWeight: 600, textAlign: 'right',
+                padding: '0 4px 4px', alignSelf: 'flex-end',
+              }}>Mark all read</button>
+            )}
+            {reminders.map((r, i) => (
+              <div key={r.id} onClick={() => setReminders(prev => prev.map((x, j) => j === i ? { ...x, read: true } : x))}
+                style={{
+                  background: r.read ? '#fff' : `${CARDINAL}08`,
+                  borderRadius: 14, padding: '12px 14px',
+                  display: 'flex', alignItems: 'flex-start', gap: 12,
+                  boxShadow: '0 1px 6px rgba(0,0,0,0.05)',
+                  border: r.read ? '1px solid #F0F0F0' : `1px solid ${CARDINAL}22`,
+                  cursor: 'pointer',
+                }}>
+                <div style={{
+                  width: 40, height: 40, borderRadius: 12,
+                  background: r.read ? '#F5F5F5' : CARDINAL_LIGHT,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 20, flexShrink: 0,
+                }}>{r.icon}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: '#1A1A1A' }}>{r.title}</p>
+                    {!r.read && <div style={{ width: 8, height: 8, borderRadius: 4, background: CARDINAL, flexShrink: 0 }} />}
+                  </div>
+                  <p style={{ fontSize: 12, color: '#666', marginTop: 2, lineHeight: '16px' }}>{r.body}</p>
+                  <p style={{ fontSize: 11, color: '#BBB', marginTop: 4 }}>{r.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Add Friend modal */}
+      {showAddFriend && (
+        <div style={{
+          position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)',
+          zIndex: 200, display: 'flex', alignItems: 'flex-end',
+        }} onClick={() => setShowAddFriend(false)}>
+          <div style={{
+            background: '#fff', borderRadius: '20px 20px 0 0',
+            padding: '20px 16px 40px', width: '100%',
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <p style={{ fontSize: 17, fontWeight: 800, color: '#1A1A1A' }}>Add Friends</p>
+              <button onClick={() => setShowAddFriend(false)} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#999' }}>✕</button>
+            </div>
+            <input
+              value={friendSearch}
+              onChange={e => setFriendSearch(e.target.value)}
+              placeholder="Search by name..."
+              style={{
+                width: '100%', padding: '10px 12px', borderRadius: 10,
+                border: '1.5px solid #EEE', fontSize: 14, outline: 'none',
+                marginBottom: 12, fontFamily: 'Inter, sans-serif',
+              }}
+            />
+            {filteredFriends.length === 0 && (
+              <p style={{ fontSize: 13, color: '#BBB', textAlign: 'center', padding: '16px 0' }}>No results found</p>
+            )}
+            {filteredFriends.map((f, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '8px 0', borderBottom: i < filteredFriends.length - 1 ? '1px solid #F5F5F5' : 'none',
+              }}>
+                <Avatar person={f} size={36} />
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: '#1A1A1A' }}>{f.name}</p>
+                  <p style={{ fontSize: 12, color: '#AAA' }}>{f.dorm}</p>
+                </div>
+                <button onClick={() => {
+                  setFriends(prev => [...prev, f]);
+                  setAddedFriends(prev => [...prev, f.name]);
+                }} style={{
+                  padding: '7px 14px', borderRadius: 10,
+                  background: addedFriends.includes(f.name) ? '#22C55E' : CARDINAL,
+                  color: '#fff', border: 'none', cursor: 'pointer',
+                  fontSize: 13, fontWeight: 700,
+                }}>
+                  {addedFriends.includes(f.name) ? '✓' : 'Add'}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Perks Screen component (used inside Profile) ───────────────
+function PerksSection({ totalPoints }) {
+  const [claimed, setClaimed] = React.useState([]);
+  return (
+    <div style={{ padding: '0 12px 8px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1A1A' }}>Perks & Rewards</span>
+        <span style={{ fontSize: 12, color: '#999' }}>{totalPoints.toLocaleString()} pts</span>
+      </div>
+
+      {/* Points progress track */}
+      <div style={{ background: '#fff', borderRadius: 14, padding: '12px 14px', marginBottom: 10, boxShadow: '0 1px 6px rgba(0,0,0,0.05)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{ fontSize: 12, color: '#888' }}>Progress to next perk</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: CARDINAL }}>{totalPoints} / 1,500 pts</span>
+        </div>
+        <div style={{ height: 8, background: '#F0F0F0', borderRadius: 4, overflow: 'hidden' }}>
+          <div style={{
+            height: '100%', borderRadius: 4,
+            width: `${Math.min(100, (totalPoints / 1500) * 100)}%`,
+            background: `linear-gradient(90deg, ${CARDINAL}, #E85555)`,
+            transition: 'width 0.6s',
+          }} />
+        </div>
+        <p style={{ fontSize: 11, color: '#BBB', marginTop: 5 }}>260 pts away from Cardinal Gear 👕</p>
+      </div>
+
+      {/* Perk cards */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {PERKS.map(perk => {
+          const isUnlocked = totalPoints >= perk.pts;
+          const isClaimed = claimed.includes(perk.id);
+          return (
+            <div key={perk.id} style={{
+              background: '#fff', borderRadius: 14, padding: '12px 14px',
+              display: 'flex', alignItems: 'center', gap: 12,
+              boxShadow: isUnlocked ? '0 1px 8px rgba(0,0,0,0.07)' : 'none',
+              border: isClaimed ? '1.5px solid #22C55E' : isUnlocked ? `1.5px solid ${CARDINAL}33` : '1.5px solid #F0F0F0',
+              opacity: isUnlocked ? 1 : 0.55,
+            }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 12,
+                background: isUnlocked ? CARDINAL_LIGHT : '#F5F5F5',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 22, flexShrink: 0,
+                filter: isUnlocked ? 'none' : 'grayscale(1)',
+              }}>{perk.icon}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: isUnlocked ? '#1A1A1A' : '#888' }}>{perk.title}</p>
+                  {isClaimed && <span style={{ fontSize: 10, fontWeight: 700, color: '#22C55E', background: '#F0FDF4', borderRadius: 5, padding: '1px 5px' }}>CLAIMED</span>}
+                </div>
+                <p style={{ fontSize: 11, color: '#AAA', lineHeight: '15px', marginTop: 1 }}>{perk.desc}</p>
+                <p style={{ fontSize: 11, fontWeight: 700, color: isUnlocked ? CARDINAL : '#BBB', marginTop: 3 }}>{perk.pts.toLocaleString()} pts</p>
+              </div>
+              {isUnlocked && !isClaimed && (
+                <button onClick={() => setClaimed(prev => [...prev, perk.id])} style={{
+                  padding: '8px 12px', borderRadius: 10,
+                  background: CARDINAL, color: '#fff', border: 'none', cursor: 'pointer',
+                  fontSize: 12, fontWeight: 700, flexShrink: 0,
+                }}>Claim</button>
+              )}
+              {!isUnlocked && (
+                <span style={{ fontSize: 16, flexShrink: 0 }}>🔒</span>
+              )}
+              {isClaimed && (
+                <span style={{ fontSize: 20, flexShrink: 0 }}>✅</span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── Admin data ────────────────────────────────────────────────
+const ADMIN_EVENTS_SEED = [
+  { id: 1, sport: 'Football', date: 'Sat, May 10', time: '7:00 PM', pts: 100, checkins: 312, word: 'TREEFROG', published: true },
+  { id: 2, sport: "Men's Basketball", date: 'Wed, May 14', time: '8:00 PM', pts: 75, checkins: 187, word: 'AXEMEN', published: true },
+  { id: 3, sport: 'Baseball', date: 'Fri, May 16', time: '3:00 PM', pts: 50, checkins: 94, word: 'DIAMOND', published: true },
+  { id: 4, sport: "Women's Soccer", date: 'Sun, May 18', time: '1:00 PM', pts: 75, checkins: 0, word: 'GOALPOST', published: false },
+];
+
+// ── Admin: Register Event ─────────────────────────────────────
+function AdminRegisterScreen({ onPublish }) {
+  const [form, setForm] = React.useState({ sport: '', date: '', time: '', pts: 75, word: '' });
+  const [published, setPublished] = React.useState(false);
+
+  const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
+
+  const handlePublish = () => {
+    if (!form.sport || !form.date || !form.time || !form.word) return;
+    setPublished(true);
+    onPublish({ ...form, id: Date.now(), checkins: 0, published: true });
+    setTimeout(() => { setPublished(false); setForm({ sport: '', date: '', time: '', pts: 75, word: '' }); }, 2000);
+  };
+
+  const inputStyle = {
+    width: '100%', padding: '11px 13px', borderRadius: 11,
+    border: '1.5px solid #E8E8E8', fontSize: 15, color: '#1A1A1A',
+    fontFamily: 'Inter, sans-serif', outline: 'none', background: '#fff',
+    WebkitAppearance: 'none',
+  };
+  const labelStyle = { display: 'block', fontSize: 11, fontWeight: 700, color: '#888', marginBottom: 5, textTransform: 'uppercase', letterSpacing: 0.5 };
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 100px' }}>
+      <div style={{ background: CARDINAL_LIGHT, borderRadius: 14, padding: '12px 14px', marginBottom: 18, border: `1px solid ${CARDINAL}22` }}>
+        <p style={{ fontSize: 13, color: CARDINAL, fontWeight: 600, lineHeight: '18px' }}>
+          📋 Fill out the form below to register a new event. Students will see it in Upcoming Games immediately after publishing.
+        </p>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div>
+          <label style={labelStyle}>Sport Name</label>
+          <input value={form.sport} onChange={e => set('sport', e.target.value)}
+            placeholder="e.g. Women's Volleyball" style={inputStyle} />
+        </div>
+
+        <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ flex: 1 }}>
+            <label style={labelStyle}>Date</label>
+            <input type="date" value={form.date} onChange={e => set('date', e.target.value)} style={inputStyle} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={labelStyle}>Time</label>
+            <input type="time" value={form.time} onChange={e => set('time', e.target.value)} style={inputStyle} />
+          </div>
+        </div>
+
+        <div>
+          <label style={labelStyle}>Point Value</label>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {[25, 50, 75, 100, 150].map(p => (
+              <button key={p} onClick={() => set('pts', p)} style={{
+                flex: 1, padding: '10px 0', borderRadius: 10,
+                background: form.pts === p ? CARDINAL : '#F5F5F5',
+                color: form.pts === p ? '#fff' : '#888',
+                border: form.pts === p ? 'none' : '1.5px solid #E8E8E8',
+                fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}>{p}</button>
+            ))}
+          </div>
+          <p style={{ fontSize: 11, color: '#BBB', marginTop: 5 }}>Points awarded to each student who attends</p>
+        </div>
+
+        <div>
+          <label style={labelStyle}>Secret Check-in Word</label>
+          <input
+            value={form.word}
+            onChange={e => set('word', e.target.value.toUpperCase().replace(/[^A-Z]/g, ''))}
+            placeholder="e.g. TREEFROG"
+            maxLength={12}
+            style={{ ...inputStyle, fontFamily: 'monospace', fontSize: 18, fontWeight: 700, letterSpacing: 3, color: CARDINAL }}
+          />
+          <p style={{ fontSize: 11, color: '#BBB', marginTop: 5 }}>Announced 15 min before game time. Students enter this to check in.</p>
+        </div>
+
+        {/* Preview card */}
+        {form.sport && (
+          <div style={{
+            background: '#fff', borderRadius: 14, padding: '14px', border: '1.5px solid #F0F0F0',
+            boxShadow: '0 1px 6px rgba(0,0,0,0.05)',
+          }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: '#AAA', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Preview</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <p style={{ fontSize: 15, fontWeight: 700, color: '#1A1A1A' }}>{form.sport || '—'}</p>
+                <p style={{ fontSize: 12, color: '#888', marginTop: 2 }}>{form.date || '—'} · {form.time || '—'}</p>
+              </div>
+              <div style={{ background: CARDINAL_LIGHT, borderRadius: 10, padding: '6px 12px' }}>
+                <span style={{ fontSize: 14, fontWeight: 800, color: CARDINAL }}>+{form.pts} pts</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <button onClick={handlePublish} style={{
+          width: '100%', padding: '15px',
+          background: published ? '#22C55E' : (!form.sport || !form.date || !form.time || !form.word) ? '#DDD' : CARDINAL,
+          color: '#fff', borderRadius: 13, border: 'none',
+          fontSize: 16, fontWeight: 800, cursor: 'pointer',
+          transition: 'background 0.3s',
+          boxShadow: published ? '0 4px 14px rgba(34,197,94,0.4)' : '0 4px 14px rgba(140,21,21,0.3)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+        }}>
+          {published ? '✓ Event Published!' : '🚀 Publish Event'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Admin: Event Dashboard ────────────────────────────────────
+function AdminDashboardScreen({ events }) {
+  const total = events.reduce((s, e) => s + e.checkins, 0);
+  const published = events.filter(e => e.published).length;
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 100px' }}>
+      {/* Summary strip */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+        {[
+          { label: 'Events', value: events.length },
+          { label: 'Published', value: published },
+          { label: 'Total Check-ins', value: total.toLocaleString() },
+        ].map((s, i) => (
+          <div key={i} style={{
+            flex: 1, background: '#fff', borderRadius: 13, padding: '12px 10px', textAlign: 'center',
+            boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
+          }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: i === 2 ? CARDINAL : '#1A1A1A' }}>{s.value}</div>
+            <div style={{ fontSize: 10, color: '#AAA', marginTop: 2, lineHeight: '13px' }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <p style={{ fontSize: 12, color: '#AAA', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>All Events · Spring 2026</p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {events.map(ev => (
+          <div key={ev.id} style={{
+            background: '#fff', borderRadius: 14, overflow: 'hidden',
+            boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
+            border: ev.published ? '1.5px solid transparent' : '1.5px dashed #DDD',
+            opacity: ev.published ? 1 : 0.7,
+          }}>
+            {ev.published && <div style={{ height: 3, background: `linear-gradient(90deg, ${CARDINAL}, #E85555)` }} />}
+            <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 12,
+                background: ev.published ? CARDINAL_LIGHT : '#F5F5F5',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 20, flexShrink: 0,
+              }}>
+                {ev.sport.includes('Football') ? '🏈' : ev.sport.includes('Basketball') ? '🏀' : ev.sport.includes('Baseball') ? '⚾' : ev.sport.includes('Soccer') ? '⚽' : '🏅'}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A' }}>{ev.sport}</p>
+                  {!ev.published && (
+                    <span style={{ fontSize: 10, color: '#888', background: '#F0F0F0', borderRadius: 5, padding: '1px 5px', fontWeight: 600 }}>DRAFT</span>
+                  )}
+                </div>
+                <p style={{ fontSize: 12, color: '#888', marginTop: 1 }}>{ev.date} · {ev.time}</p>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 15, fontWeight: 800, color: CARDINAL }}>{ev.checkins.toLocaleString()}</div>
+                <div style={{ fontSize: 10, color: '#AAA' }}>check-ins</div>
+              </div>
+              <div style={{ textAlign: 'right', marginLeft: 6 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A' }}>+{ev.pts}</div>
+                <div style={{ fontSize: 10, color: '#AAA' }}>pts</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Admin: Secret Word ────────────────────────────────────────
+function AdminSecretWordScreen({ events }) {
+  const todayEvent = events.find(e => e.published && e.checkins > 0) || events[0];
+  const [announced, setAnnounced] = React.useState(false);
+  const [seconds, setSeconds] = React.useState(14 * 60 + 33); // ~14:33 countdown
+
+  React.useEffect(() => {
+    if (announced) return;
+    const t = setInterval(() => setSeconds(s => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(t);
+  }, [announced]);
+
+  const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const secs = String(seconds % 60).padStart(2, '0');
+  const unlocked = seconds === 0 || announced;
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 100px' }}>
+      {/* Today's game */}
+      <div style={{
+        background: '#fff', borderRadius: 14, padding: '14px 16px', marginBottom: 16,
+        boxShadow: '0 1px 8px rgba(0,0,0,0.06)', border: `1.5px solid ${CARDINAL}22`,
+      }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#AAA', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>Today's Game</p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <p style={{ fontSize: 16, fontWeight: 800, color: '#1A1A1A' }}>{todayEvent?.sport}</p>
+            <p style={{ fontSize: 13, color: '#888', marginTop: 2 }}>{todayEvent?.date} · {todayEvent?.time}</p>
+          </div>
+          <div style={{ background: CARDINAL_LIGHT, borderRadius: 10, padding: '6px 12px' }}>
+            <span style={{ fontSize: 14, fontWeight: 800, color: CARDINAL }}>+{todayEvent?.pts} pts</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Secret word reveal */}
+      <div style={{
+        background: unlocked ? CARDINAL : '#1A1A1A',
+        borderRadius: 20, padding: '28px 20px',
+        textAlign: 'center', marginBottom: 16,
+        boxShadow: unlocked ? `0 8px 30px ${CARDINAL}55` : '0 8px 30px rgba(0,0,0,0.3)',
+        transition: 'background 0.6s, box-shadow 0.6s',
+      }}>
+        <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>
+          {unlocked ? 'Secret Check-in Word' : '🔒 Locked Until 15 Min Before Game'}
+        </p>
+
+        {unlocked ? (
+          <div style={{
+            fontFamily: 'monospace', fontSize: 36, fontWeight: 900, color: '#FFD700',
+            letterSpacing: 6, marginBottom: 8, textShadow: '0 2px 12px rgba(0,0,0,0.3)',
+          }}>{todayEvent?.word}</div>
+        ) : (
+          <div style={{ marginBottom: 8 }}>
+            <div style={{
+              fontFamily: 'monospace', fontSize: 36, fontWeight: 900, color: 'rgba(255,255,255,0.15)',
+              letterSpacing: 6,
+            }}>{'•'.repeat(todayEvent?.word?.length || 7)}</div>
+          </div>
+        )}
+
+        {/* Countdown */}
+        {!unlocked && (
+          <div style={{ marginBottom: 4 }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: 'rgba(255,255,255,0.1)', borderRadius: 12, padding: '8px 18px',
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.6)" strokeWidth="2"/>
+                <path d="M12 7v5l3 3" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              <span style={{ fontFamily: 'monospace', fontSize: 24, fontWeight: 800, color: '#fff', letterSpacing: 2 }}>
+                {mins}:{secs}
+              </span>
+            </div>
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 8 }}>until word unlocks automatically</p>
+          </div>
+        )}
+
+        {unlocked && (
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginTop: 4 }}>
+            {todayEvent?.checkins.toLocaleString()} students checked in so far
+          </p>
+        )}
+      </div>
+
+      {/* Announce Now button */}
+      <button onClick={() => setAnnounced(true)} disabled={announced} style={{
+        width: '100%', padding: '15px',
+        background: announced ? '#22C55E' : CARDINAL,
+        color: '#fff', borderRadius: 13, border: 'none',
+        fontSize: 16, fontWeight: 800, cursor: announced ? 'default' : 'pointer',
+        boxShadow: announced ? '0 4px 14px rgba(34,197,94,0.4)' : `0 4px 14px ${CARDINAL}55`,
+        transition: 'background 0.3s',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+        marginBottom: 12,
+      }}>
+        {announced ? '✓ Word Announced!' : '📣 Announce Now'}
+      </button>
+
+      {!announced && (
+        <p style={{ fontSize: 12, color: '#AAA', textAlign: 'center', lineHeight: '17px' }}>
+          Override the timer and reveal the word immediately. This will notify all students who registered for this game.
+        </p>
+      )}
+
+      {announced && (
+        <div style={{
+          background: '#F0FDF4', borderRadius: 12, padding: '12px 14px',
+          border: '1px solid #BBF7D0', display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          <span style={{ fontSize: 20 }}>✅</span>
+          <p style={{ fontSize: 13, color: '#166534', lineHeight: '17px', fontWeight: 500 }}>
+            Word announced! Students who registered will receive a notification now.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── RA Data ───────────────────────────────────────────────────
+const RA_RESIDENTS = [
+  { name: 'Alex Chen', pts: 1240, games: 14, initials: 'AC', color: CARDINAL },
+  { name: 'Jordan Kim', pts: 1180, games: 13, initials: 'JK', color: '#E07B54' },
+  { name: 'Priya Mehta', pts: 960, games: 11, initials: 'PM', color: '#5B8DD9' },
+  { name: 'Tyler Hayes', pts: 880, games: 10, initials: 'TH', color: '#48A868' },
+  { name: 'Sasha Lin', pts: 850, games: 9, initials: 'SL', color: '#9B59B6' },
+  { name: 'Omar Bakr', pts: 820, games: 9, initials: 'OB', color: '#E67E22' },
+  { name: 'Nina Torres', pts: 750, games: 8, initials: 'NT', color: '#F39C12' },
+  { name: 'Cam Rivera', pts: 640, games: 7, initials: 'CR', color: '#1ABC9C' },
+  { name: 'Dev Patel', pts: 510, games: 6, initials: 'DP', color: '#3498DB' },
+  { name: 'Zoe Fischer', pts: 420, games: 5, initials: 'ZF', color: '#2ECC71' },
+  { name: 'Marcus Webb', pts: 310, games: 4, initials: 'MW', color: '#E74C3C' },
+  { name: 'Leila Amin', pts: 200, games: 2, initials: 'LA', color: '#E91E8C' },
+];
+
+const RA_GAME_BREAKDOWN = [
+  { sport: 'Football', opponent: 'vs. Oregon', date: 'Apr 5', checkins: 18, total: 24, icon: '🏈' },
+  { sport: "Men's Basketball", opponent: 'vs. Cal', date: 'Apr 9', checkins: 14, total: 24, icon: '🏀' },
+  { sport: 'Baseball', opponent: 'vs. USC', date: 'Apr 14', checkins: 10, total: 24, icon: '⚾' },
+  { sport: "Women's Soccer", opponent: 'vs. UCLA', date: 'Apr 19', checkins: 16, total: 24, icon: '⚽' },
+  { sport: 'Football', opponent: 'vs. ASU', date: 'Apr 26', checkins: 20, total: 24, icon: '🏈' },
+  { sport: "Women's Volleyball", opponent: 'vs. Utah', date: 'May 2', checkins: 12, total: 24, icon: '🏐' },
+];
+
+// ── RA: Dorm Dashboard ────────────────────────────────────────
+function RADormDashboard({ tweaks }) {
+  const { dormName, dormRank } = tweaks;
+  const totalPts = RA_RESIDENTS.reduce((s, r) => s + r.pts, 0);
+  const avgPts = Math.round(totalPts / RA_RESIDENTS.length);
+  const totalCheckins = RA_GAME_BREAKDOWN.reduce((s, g) => s + g.checkins, 0);
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 100px' }}>
+      {/* Dorm summary card */}
+      <div style={{
+        background: `linear-gradient(135deg, ${CARDINAL} 0%, #6B1010 100%)`,
+        borderRadius: 18, padding: '18px 18px', marginBottom: 14,
+        boxShadow: `0 6px 24px ${CARDINAL}44`,
+      }}>
+        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.8 }}>{dormName} · Spring 2026</p>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 6 }}>
+          <div>
+            <p style={{ color: '#FFD700', fontSize: 42, fontWeight: 900, lineHeight: 1 }}>#{dormRank}</p>
+            <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, marginTop: 4 }}>Dorm rank</p>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <p style={{ color: '#fff', fontSize: 26, fontWeight: 800 }}>{totalPts.toLocaleString()}</p>
+            <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13 }}>total points</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick stats */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+        {[
+          { label: 'Residents', value: RA_RESIDENTS.length },
+          { label: 'Avg Points', value: avgPts.toLocaleString() },
+          { label: 'Total Check-ins', value: totalCheckins },
+        ].map((s, i) => (
+          <div key={i} style={{
+            flex: 1, background: '#fff', borderRadius: 13, padding: '11px 8px',
+            textAlign: 'center', boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
+          }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#1A1A1A' }}>{s.value}</div>
+            <div style={{ fontSize: 10, color: '#AAA', marginTop: 2, lineHeight: '13px' }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Game-by-game breakdown */}
+      <p style={{ fontSize: 12, color: '#AAA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Game-by-Game Attendance</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+        {RA_GAME_BREAKDOWN.map((g, i) => {
+          const pct = g.checkins / g.total;
+          const barColor = pct >= 0.75 ? '#22C55E' : pct >= 0.5 ? '#F59E0B' : CARDINAL;
+          return (
+            <div key={i} style={{
+              background: '#fff', borderRadius: 13, padding: '11px 14px',
+              boxShadow: '0 1px 6px rgba(0,0,0,0.05)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 7 }}>
+                <span style={{ fontSize: 18, flexShrink: 0 }}>{g.icon}</span>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#1A1A1A' }}>{g.sport} <span style={{ color: '#888', fontWeight: 400 }}>{g.opponent}</span></p>
+                  <p style={{ fontSize: 11, color: '#BBB' }}>{g.date}</p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: 14, fontWeight: 800, color: barColor }}>{g.checkins}</span>
+                  <span style={{ fontSize: 12, color: '#BBB' }}>/{g.total}</span>
+                </div>
+              </div>
+              <div style={{ height: 6, background: '#F0F0F0', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%', borderRadius: 3,
+                  width: `${pct * 100}%`,
+                  background: barColor,
+                  transition: 'width 0.5s',
+                }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── RA: Resident Breakdown ────────────────────────────────────
+function RAResidentBreakdown() {
+  const PRIZE_THRESHOLD = 1000;
+  const NUDGE_ZONE = 200;
+  const sorted = [...RA_RESIDENTS].sort((a, b) => b.pts - a.pts);
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 100px' }}>
+      {/* Legend */}
+      <div style={{
+        background: CARDINAL_LIGHT, borderRadius: 13, padding: '11px 14px',
+        border: `1px solid ${CARDINAL}22`, marginBottom: 14,
+        display: 'flex', alignItems: 'center', gap: 10,
+      }}>
+        <div style={{ width: 10, height: 10, borderRadius: 2, background: CARDINAL, flexShrink: 0 }} />
+        <p style={{ fontSize: 12, color: CARDINAL, fontWeight: 600, lineHeight: '16px' }}>
+          Flagged residents are within 200 pts of the 1,000-pt individual prize — a nudge could push them over.
+        </p>
+      </div>
+
+      {/* Prize line marker */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+        <div style={{ flex: 1, height: 1, background: '#EEE' }} />
+        <span style={{ fontSize: 11, color: '#BBB', fontWeight: 600, whiteSpace: 'nowrap' }}>🏅 1,000 pt prize threshold</span>
+        <div style={{ flex: 1, height: 1, background: '#EEE' }} />
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+        {sorted.map((r, i) => {
+          const overThreshold = r.pts >= PRIZE_THRESHOLD;
+          const nearThreshold = !overThreshold && (PRIZE_THRESHOLD - r.pts) <= NUDGE_ZONE;
+          const ptsAway = PRIZE_THRESHOLD - r.pts;
+
+          return (
+            <div key={i} style={{
+              background: '#fff', borderRadius: 13, padding: '11px 14px',
+              display: 'flex', alignItems: 'center', gap: 11,
+              boxShadow: nearThreshold ? `0 2px 12px ${CARDINAL}22` : '0 1px 6px rgba(0,0,0,0.05)',
+              border: nearThreshold ? `1.5px solid ${CARDINAL}44` : overThreshold ? '1.5px solid #22C55E44' : '1.5px solid transparent',
+            }}>
+              {/* Avatar */}
+              <div style={{
+                width: 36, height: 36, borderRadius: '50%',
+                background: r.color, flexShrink: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 13, fontWeight: 700, color: '#fff',
+                border: '2px solid #fff',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
+              }}>{r.initials}</div>
+
+              {/* Info */}
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A' }}>{r.name}</p>
+                  {nearThreshold && (
+                    <div style={{
+                      width: 8, height: 8, borderRadius: 4, background: CARDINAL, flexShrink: 0,
+                      boxShadow: `0 0 0 3px ${CARDINAL}22`,
+                    }} />
+                  )}
+                  {overThreshold && <span style={{ fontSize: 12 }}>✅</span>}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
+                  <span style={{ fontSize: 11, color: '#AAA' }}>{r.games} games</span>
+                  {nearThreshold && (
+                    <span style={{ fontSize: 11, fontWeight: 700, color: CARDINAL }}>
+                      {ptsAway} pts to prize 🎯
+                    </span>
+                  )}
+                  {overThreshold && (
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#22C55E' }}>Prize unlocked!</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Points */}
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ fontSize: 16, fontWeight: 800, color: overThreshold ? '#22C55E' : nearThreshold ? CARDINAL : '#1A1A1A' }}>
+                  {r.pts.toLocaleString()}
+                </p>
+                <p style={{ fontSize: 10, color: '#BBB' }}>pts</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── RA: Rally Your Floor ──────────────────────────────────────
+function RARallyScreen({ tweaks }) {
+  const { dormName, dormRank } = tweaks;
+  const nextGame = UPCOMING_GAMES[0];
+
+  const defaultMsg = `Hey Toyon! 🌲 We're ranked #${dormRank} — let's move up. ${nextGame.sport} ${nextGame.opponent} starts at ${nextGame.time} on ${nextGame.date}. Check in on The Cardinal to earn ${nextGame.points} pts for the dorm. Let's go Cardinal! 🏈`;
+  const [msg, setMsg] = React.useState(defaultMsg);
+  const [sent, setSent] = React.useState(false);
+  const [selectedGame, setSelectedGame] = React.useState(0);
+
+  const updateMsg = (gameIdx) => {
+    const g = UPCOMING_GAMES[gameIdx];
+    setSelectedGame(gameIdx);
+    setMsg(`Hey ${dormName}! 🌲 We're ranked #${dormRank} — let's move up. ${g.sport} ${g.opponent} starts at ${g.time} on ${g.date}. Check in on The Cardinal to earn ${g.points} pts for the dorm. Let's go Cardinal! 🏈`);
+    setSent(false);
+  };
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 100px' }}>
+      <div style={{ background: CARDINAL_LIGHT, borderRadius: 13, padding: '11px 14px', marginBottom: 16, border: `1px solid ${CARDINAL}22` }}>
+        <p style={{ fontSize: 13, color: CARDINAL, fontWeight: 600, lineHeight: '18px' }}>
+          📣 Customize and send a rally message to all residents before game time.
+        </p>
+      </div>
+
+      {/* Game picker */}
+      <p style={{ fontSize: 11, fontWeight: 700, color: '#AAA', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Select Game</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 16 }}>
+        {UPCOMING_GAMES.map((g, i) => (
+          <button key={g.id} onClick={() => updateMsg(i)} style={{
+            background: selectedGame === i ? CARDINAL_LIGHT : '#fff',
+            border: selectedGame === i ? `1.5px solid ${CARDINAL}55` : '1.5px solid #F0F0F0',
+            borderRadius: 12, padding: '10px 14px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left',
+            transition: 'all 0.15s',
+          }}>
+            <span style={{ fontSize: 18 }}>{g.icon}</span>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: selectedGame === i ? CARDINAL : '#1A1A1A' }}>{g.sport} {g.opponent}</p>
+              <p style={{ fontSize: 11, color: '#AAA' }}>{g.date} · {g.time}</p>
+            </div>
+            <div style={{
+              width: 20, height: 20, borderRadius: 10,
+              border: `2px solid ${selectedGame === i ? CARDINAL : '#DDD'}`,
+              background: selectedGame === i ? CARDINAL : 'transparent',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            }}>
+              {selectedGame === i && <div style={{ width: 8, height: 8, borderRadius: 4, background: '#fff' }} />}
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* Message editor */}
+      <p style={{ fontSize: 11, fontWeight: 700, color: '#AAA', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Message</p>
+      <textarea
+        value={msg}
+        onChange={e => { setMsg(e.target.value); setSent(false); }}
+        rows={6}
+        style={{
+          width: '100%', padding: '13px', borderRadius: 13,
+          border: '1.5px solid #E8E8E8', fontSize: 14, color: '#1A1A1A',
+          fontFamily: 'Inter, sans-serif', lineHeight: '20px',
+          outline: 'none', resize: 'none', background: '#fff',
+          boxSizing: 'border-box', marginBottom: 8,
+        }}
+      />
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+        <span style={{ fontSize: 11, color: '#BBB' }}>{msg.length} characters</span>
+        <button onClick={() => setMsg(defaultMsg)} style={{
+          background: 'none', border: 'none', fontSize: 12, color: '#AAA',
+          cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+        }}>↺ Reset to default</button>
+      </div>
+
+      {/* Preview bubble */}
+      <div style={{
+        background: '#F0F0F0', borderRadius: 16, borderBottomLeftRadius: 4,
+        padding: '12px 14px', marginBottom: 16,
+      }}>
+        <p style={{ fontSize: 12, color: '#888', marginBottom: 4, fontWeight: 600 }}>Preview — how it appears to residents</p>
+        <p style={{ fontSize: 13, color: '#1A1A1A', lineHeight: '19px' }}>{msg}</p>
+      </div>
+
+      {/* Recipients count */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        background: '#fff', borderRadius: 12, padding: '11px 14px',
+        border: '1px solid #F0F0F0', marginBottom: 12,
+        boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex' }}>
+            {RA_RESIDENTS.slice(0, 4).map((r, i) => (
+              <div key={i} style={{
+                width: 26, height: 26, borderRadius: 13,
+                background: r.color, border: '2px solid #fff',
+                marginLeft: i === 0 ? 0 : -8,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 9, fontWeight: 700, color: '#fff',
+              }}>{r.initials}</div>
+            ))}
+          </div>
+          <span style={{ fontSize: 13, color: '#555', fontWeight: 500 }}>
+            Sending to <strong>{RA_RESIDENTS.length} residents</strong>
+          </span>
+        </div>
+        <span style={{ fontSize: 12, color: '#BBB' }}>via push + SMS</span>
+      </div>
+
+      {/* Send button */}
+      <button onClick={() => setSent(true)} style={{
+        width: '100%', padding: '15px',
+        background: sent ? '#22C55E' : CARDINAL,
+        color: '#fff', borderRadius: 13, border: 'none',
+        fontSize: 16, fontWeight: 800, cursor: 'pointer',
+        transition: 'background 0.3s',
+        boxShadow: sent ? '0 4px 14px rgba(34,197,94,0.4)' : `0 4px 14px ${CARDINAL}44`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+      }}>
+        {sent ? (
+          <><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg> Sent to {RA_RESIDENTS.length} Residents!</>
+        ) : (
+          <><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg> Send to Floor</>
+        )}
+      </button>
+    </div>
+  );
+}
+
+// ── RA Shell ──────────────────────────────────────────────────
+function RAShell({ onExit, tweaks }) {
+  const [raTab, setRaTab] = React.useState('dashboard');
+  const tabs = [
+    { id: 'dashboard', label: 'Dorm Dashboard' },
+    { id: 'residents', label: 'Residents' },
+    { id: 'rally', label: 'Rally Floor' },
+  ];
+
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#FAFAFA' }}>
+      {/* RA header — deep green-tinted dark */}
+      <div style={{ background: '#0F2A1A', paddingTop: 58, paddingLeft: 16, paddingRight: 16, paddingBottom: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 8, height: 8, borderRadius: 4, background: '#4ADE80' }} />
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>RA Dashboard</p>
+            </div>
+            <p style={{ color: '#fff', fontSize: 20, fontWeight: 800, marginTop: 2 }}>{tweaks.dormName}</p>
+          </div>
+          <button onClick={onExit} style={{
+            background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: 10, padding: '7px 12px', color: 'rgba(255,255,255,0.7)',
+            fontSize: 12, fontWeight: 600, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 5,
+          }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <path d="M19 12H5M12 5l-7 7 7 7" stroke="rgba(255,255,255,0.7)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Exit
+          </button>
+        </div>
+        {/* Top nav tabs */}
+        <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+          {tabs.map(t => (
+            <button key={t.id} onClick={() => setRaTab(t.id)} style={{
+              flex: 1, padding: '10px 4px', background: 'none', border: 'none',
+              cursor: 'pointer', fontSize: 11, fontWeight: raTab === t.id ? 700 : 400,
+              color: raTab === t.id ? '#fff' : 'rgba(255,255,255,0.4)',
+              borderBottom: raTab === t.id ? '2px solid #4ADE80' : '2px solid transparent',
+              transition: 'all 0.15s', marginBottom: -1,
+            }}>{t.label}</button>
+          ))}
+        </div>
+        <div style={{ height: 14 }} />
+      </div>
+
+      {raTab === 'dashboard' && <RADormDashboard tweaks={tweaks} />}
+      {raTab === 'residents' && <RAResidentBreakdown />}
+      {raTab === 'rally' && <RARallyScreen tweaks={tweaks} />}
+    </div>
+  );
+}
+
+// ── Admin Shell ───────────────────────────────────────────────
+function AdminShell({ onExit }) {
+  const [adminTab, setAdminTab] = React.useState('register');
+  const [events, setEvents] = React.useState(ADMIN_EVENTS_SEED);
+
+  const handlePublish = (newEvent) => {
+    setEvents(prev => [...prev, newEvent]);
+    setTimeout(() => setAdminTab('dashboard'), 1800);
+  };
+
+  const tabs = [
+    { id: 'register', label: 'Register Event' },
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'secret', label: 'Secret Word' },
+  ];
+
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#FAFAFA' }}>
+      {/* Admin header */}
+      <div style={{ background: '#1A1A1A', paddingTop: 58, paddingLeft: 16, paddingRight: 16, paddingBottom: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 8, height: 8, borderRadius: 4, background: CARDINAL }} />
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>DAPER Admin</p>
+            </div>
+            <p style={{ color: '#fff', fontSize: 20, fontWeight: 800, marginTop: 2 }}>Event Manager</p>
+          </div>
+          <button onClick={onExit} style={{
+            background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: 10, padding: '7px 12px', color: 'rgba(255,255,255,0.7)',
+            fontSize: 12, fontWeight: 600, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 5,
+          }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <path d="M19 12H5M12 5l-7 7 7 7" stroke="rgba(255,255,255,0.7)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Exit Admin
+          </button>
+        </div>
+
+        {/* Top nav tabs */}
+        <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+          {tabs.map(t => (
+            <button key={t.id} onClick={() => setAdminTab(t.id)} style={{
+              flex: 1, padding: '10px 4px', background: 'none', border: 'none',
+              cursor: 'pointer', fontSize: 11, fontWeight: adminTab === t.id ? 700 : 400,
+              color: adminTab === t.id ? '#fff' : 'rgba(255,255,255,0.45)',
+              borderBottom: adminTab === t.id ? `2px solid ${CARDINAL}` : '2px solid transparent',
+              transition: 'all 0.15s', marginBottom: -1,
+            }}>{t.label}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Screen content */}
+      {adminTab === 'register' && <AdminRegisterScreen onPublish={handlePublish} />}
+      {adminTab === 'dashboard' && <AdminDashboardScreen events={events} />}
+      {adminTab === 'secret' && <AdminSecretWordScreen events={events} />}
+    </div>
+  );
+}
+
 // ── App Shell ─────────────────────────────────────────────────
 function App() {
   const [activeTab, setActiveTab] = React.useState('home');
   const [tweaks, setTweaks] = React.useState(TWEAK_DEFAULTS);
   const [showTweaks, setShowTweaks] = React.useState(false);
+  const [role, setRole] = React.useState('student');
+  const [studentScreen, setStudentScreen] = React.useState('onboarding'); // onboarding | main | checkin | photo
+  const unreadNotifs = REMINDERS_DATA.filter(r => !r.read).length;
 
-  // Tweaks protocol
   React.useEffect(() => {
     const handler = (e) => {
       if (e.data?.type === '__activate_edit_mode') setShowTweaks(true);
@@ -760,17 +2446,72 @@ function App() {
     window.parent.postMessage({ type: '__edit_mode_set_keys', edits: updates }, '*');
   };
 
-  const screens = { home: HomeScreen, games: GamesScreen, profile: ProfileScreen };
-  const Screen = screens[activeTab];
+  // When role switcher changes to student, reset to main (skip onboarding)
+  const handleRoleChange = (r) => {
+    setRole(r);
+    if (r === 'student' && studentScreen === 'onboarding') setStudentScreen('main');
+  };
+
+  const mainScreens = { home: HomeScreen, leaderboard: LeaderboardScreen, games: GamesScreen, social: SocialScreen, profile: ProfileScreen };
+  const MainScreen = mainScreens[activeTab] || HomeScreen;
+
+  const renderStudent = () => {
+    if (studentScreen === 'onboarding') return <OnboardingScreen onComplete={() => setStudentScreen('main')} />;
+    if (studentScreen === 'checkin') return <CheckInScreen tweaks={tweaks} onSuccess={() => setStudentScreen('photo')} />;
+    if (studentScreen === 'photo') return <PhotoUploadScreen tweaks={tweaks} onDone={() => setStudentScreen('main')} />;
+    return (
+      <>
+        <MainScreen tweaks={tweaks} onCheckIn={() => setStudentScreen('checkin')} />
+        <BottomNav active={activeTab} setActive={setActiveTab} notifCount={activeTab !== 'social' ? unreadNotifs : 0} />
+      </>
+    );
+  };
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: 20 }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '20px 20px 80px', gap: 20, flexWrap: 'wrap' }}>
       <IOSDevice width={390} height={844}>
         <div style={{ position: 'relative', height: '100%', overflow: 'hidden' }}>
-          <Screen tweaks={tweaks} />
-          <BottomNav active={activeTab} setActive={setActiveTab} />
+          {role === 'admin'
+            ? <AdminShell onExit={() => setRole('student')} />
+            : role === 'ra'
+            ? <RAShell onExit={() => setRole('student')} tweaks={tweaks} />
+            : renderStudent()
+          }
         </div>
       </IOSDevice>
+
+      {/* Role switcher pill — outside the phone, hidden during onboarding */}
+      {studentScreen !== 'onboarding' && (
+        <div style={{
+          position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(20,20,20,0.92)', backdropFilter: 'blur(16px)',
+          borderRadius: 999, padding: '5px',
+          display: 'flex', gap: 2, zIndex: 10000,
+          boxShadow: '0 4px 24px rgba(0,0,0,0.35)',
+          fontFamily: 'Inter, sans-serif',
+          border: '1px solid rgba(255,255,255,0.1)',
+        }}>
+          {[
+            { id: 'student', label: '🎓 Student' },
+            { id: 'ra', label: '🏠 RA View' },
+            { id: 'admin', label: '⚙️ Admin' },
+          ].map(r => (
+            <button key={r.id} onClick={() => handleRoleChange(r.id)} style={{
+              padding: '9px 16px', borderRadius: 999,
+              background: role === r.id
+                ? r.id === 'admin' ? '#1A1A1A'
+                : r.id === 'ra' ? '#0F2A1A'
+                : CARDINAL
+                : 'transparent',
+              color: role === r.id ? '#fff' : 'rgba(255,255,255,0.45)',
+              border: 'none', cursor: 'pointer',
+              fontSize: 12, fontWeight: role === r.id ? 700 : 500,
+              transition: 'all 0.2s',
+              whiteSpace: 'nowrap',
+            }}>{r.label}</button>
+          ))}
+        </div>
+      )}
 
       {/* Tweaks Panel */}
       {showTweaks && (
@@ -823,6 +2564,7 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
 </script>
 </body>
 </html>
