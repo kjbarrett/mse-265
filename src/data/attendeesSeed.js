@@ -1,0 +1,36 @@
+export const ATTENDEES_SEED = {
+  1: [
+    { name: "Jordan K.", dorm: "FloMo", color: "#E07B54", initials: "JK" },
+    { name: "Priya M.", dorm: "Stern", color: "#5B8DD9", initials: "PM" },
+    { name: "Tyler H.", dorm: "Toyon Hall", color: "#48A868", initials: "TH" },
+    { name: "Sasha L.", dorm: "Branner", color: "#9B59B6", initials: "SL" },
+    { name: "Marcus W.", dorm: "Roble", color: "#E74C3C", initials: "MW" },
+    { name: "Nina T.", dorm: "Larkin", color: "#F39C12", initials: "NT" },
+    { name: "Cam R.", dorm: "Wilbur", color: "#1ABC9C", initials: "CR" },
+    { name: "Leila A.", dorm: "FloMo", color: "#E91E8C", initials: "LA" },
+    { name: "Dev P.", dorm: "Stern", color: "#3498DB", initials: "DP" },
+    { name: "Zoe F.", dorm: "Soto", color: "#2ECC71", initials: "ZF" },
+    { name: "Omar B.", dorm: "Toyon Hall", color: "#E67E22", initials: "OB" },
+  ],
+  2: [
+    { name: "Priya M.", dorm: "Stern", color: "#5B8DD9", initials: "PM" },
+    { name: "Marcus W.", dorm: "Roble", color: "#E74C3C", initials: "MW" },
+    { name: "Leila A.", dorm: "FloMo", color: "#E91E8C", initials: "LA" },
+    { name: "Cam R.", dorm: "Wilbur", color: "#1ABC9C", initials: "CR" },
+    { name: "Zoe F.", dorm: "Soto", color: "#2ECC71", initials: "ZF" },
+  ],
+  3: [
+    { name: "Tyler H.", dorm: "Toyon Hall", color: "#48A868", initials: "TH" },
+    { name: "Nina T.", dorm: "Larkin", color: "#F39C12", initials: "NT" },
+    { name: "Omar B.", dorm: "Toyon Hall", color: "#E67E22", initials: "OB" },
+    { name: "Dev P.", dorm: "Stern", color: "#3498DB", initials: "DP" },
+    { name: "Sasha L.", dorm: "Branner", color: "#9B59B6", initials: "SL" },
+    { name: "Jordan K.", dorm: "FloMo", color: "#E07B54", initials: "JK" },
+    { name: "Marcus W.", dorm: "Roble", color: "#E74C3C", initials: "MW" },
+  ],
+  4: [
+    { name: "Leila A.", dorm: "FloMo", color: "#E91E8C", initials: "LA" },
+    { name: "Priya M.", dorm: "Stern", color: "#5B8DD9", initials: "PM" },
+    { name: "Zoe F.", dorm: "Soto", color: "#2ECC71", initials: "ZF" },
+  ],
+};

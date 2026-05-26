@@ -1,5 +1,5 @@
-
 // iOS.jsx — Simplified iOS 26 (Liquid Glass) device frame
+// Vite source of truth: src/components/ios/ (keep in sync when editing the kit)
 // Based on the iOS 26 UI Kit + Figma status bar spec. No assets, no deps.
 // Exports: IOSDevice, IOSStatusBar, IOSNavBar, IOSGlassPill, IOSList, IOSListRow, IOSKeyboard
 

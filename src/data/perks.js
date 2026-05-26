@@ -1,0 +1,42 @@
+export const PERKS = [
+  {
+    id: 1,
+    pts: 500,
+    title: "Free Concessions",
+    desc: "$5 credit at Stanford Stadium concessions",
+    icon: "🌭",
+    unlocked: true,
+  },
+  {
+    id: 2,
+    pts: 1000,
+    title: "Priority Seating",
+    desc: "Early entry + preferred section access",
+    icon: "🎟️",
+    unlocked: true,
+  },
+  {
+    id: 3,
+    pts: 1500,
+    title: "Cardinal Gear",
+    desc: "$20 Stanford Store gift card",
+    icon: "👕",
+    unlocked: false,
+  },
+  {
+    id: 4,
+    pts: 2000,
+    title: "Meet the Team",
+    desc: "Post-game locker room access (football)",
+    icon: "🏈",
+    unlocked: false,
+  },
+  {
+    id: 5,
+    pts: 3000,
+    title: "Season Pass",
+    desc: "Free tickets to all home games next season",
+    icon: "🏟️",
+    unlocked: false,
+  },
+];
