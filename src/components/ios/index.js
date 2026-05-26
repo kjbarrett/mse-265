@@ -1,4 +1,4 @@
-export { IOSDevice } from "./IOSDevice.jsx";
+export { IOSDevice, IOS_SAFE_AREA_TOP } from "./IOSDevice.jsx";
 export { IOSStatusBar } from "./IOSStatusBar.jsx";
 export { IOSNavBar } from "./IOSNavBar.jsx";
 export { IOSGlassPill } from "./IOSGlassPill.jsx";

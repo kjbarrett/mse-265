@@ -31,7 +31,7 @@ export function OnboardingScreen({ onComplete }) {
         <div
           style={{
             background: `linear-gradient(160deg, ${CARDINAL} 0%, #6B1010 100%)`,
-            paddingTop: 100,
+            paddingTop: 38,
             paddingBottom: 40,
             paddingLeft: 28,
             paddingRight: 28,

@@ -3,6 +3,13 @@ import { IOSNavBar } from "./IOSNavBar.jsx";
 import { IOSStatusBar } from "./IOSStatusBar.jsx";
 import { iosDeviceBackground } from "./iosTheme.js";
 
+/**
+ * Height reserved at the top of the device frame for the status bar
+ * (time, signal, wifi, battery). Content rendered inside IOSDevice begins
+ * below this band so it cannot bleed under the indicators when scrolled.
+ */
+export const IOS_SAFE_AREA_TOP = 62;
+
 export function IOSDevice({
   children,
   width = 402,
@@ -39,13 +46,28 @@ export function IOSDevice({
         }}
       />
       <div
-        style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 10 }}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 10,
+          pointerEvents: "none",
+        }}
       >
         <IOSStatusBar dark={dark} />
       </div>
-      <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <div
+        style={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          paddingTop: IOS_SAFE_AREA_TOP,
+          boxSizing: "border-box",
+        }}
+      >
         {title !== undefined && <IOSNavBar title={title} dark={dark} />}
-        <div style={{ flex: 1, overflow: "auto" }}>{children}</div>
+        <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>{children}</div>
         {keyboard && <IOSKeyboard dark={dark} />}
       </div>
       <div

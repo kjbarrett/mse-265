@@ -27,7 +27,7 @@ export function IOSNavBar({ title = "Title", dark = false, trailingIcon = true }
         display: "flex",
         flexDirection: "column",
         gap: 10,
-        paddingTop: 62,
+        paddingTop: 8,
         paddingBottom: 10,
         position: "relative",
         zIndex: 5,

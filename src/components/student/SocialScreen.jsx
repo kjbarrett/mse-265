@@ -63,7 +63,7 @@ export function SocialScreen({ reminders, setReminders }) {
       <div
         style={{
           background: CARDINAL,
-          paddingTop: 58,
+          paddingTop: 16,
           paddingBottom: 0,
           paddingLeft: 20,
           paddingRight: 20,

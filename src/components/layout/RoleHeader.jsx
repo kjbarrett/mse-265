@@ -20,7 +20,7 @@ export function RoleHeader({
     <div
       style={{
         background,
-        paddingTop: 58,
+        paddingTop: 16,
         paddingLeft: 16,
         paddingRight: 16,
         paddingBottom: 0,
